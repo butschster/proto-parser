@@ -1,0 +1,43 @@
+{
+    "name": "butschster/proto-parser",
+    "description": "Proto parser is a library for parsing Protocol Buffers files into AST",
+    "keywords": [
+        "php8",
+        "php",
+        "proto",
+        "protobuf",
+        "parser",
+        "ast",
+        "grpc",
+        "protocol-buffers"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pavel Buchnev",
+            "email": "butschster@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.3",
+        "phplrt/runtime": "^3.6"
+    },
+    "require-dev": {
+        "buggregator/trap": "^1.10",
+        "phplrt/phplrt": "^3.6",
+        "mockery/mockery": "^1.6",
+        "phpunit/phpunit": "^11.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Butschster\\ProtoParser\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Butschster\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

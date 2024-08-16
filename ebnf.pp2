@@ -1,0 +1,576 @@
+// Lexer rules
+%token T_SYNTAX           syntax
+%token T_PACKAGE          package
+%token T_IMPORT           import
+%token T_OPTION           option
+%token T_MESSAGE          message
+%token T_ENUM             enum
+%token T_SERVICE          service
+%token T_RPC              rpc
+%token T_RETURNS          returns
+%token T_STREAM           stream
+%token T_REPEATED         repeated
+%token T_OPTIONAL         optional
+%token T_REQUIRED         required
+%token T_RESERVED         reserved
+%token T_EXTENSIONS       extensions
+%token T_MAX              max
+%token T_WEAK             weak
+%token T_PUBLIC           public
+%token T_MAP              map
+%token T_ONEOF            oneof
+
+%token T_DOUBLE           double
+%token T_FLOAT            float
+%token T_INT32            int32
+%token T_INT64            int64
+%token T_UINT32           uint32
+%token T_UINT64           uint64
+%token T_SINT32           sint32
+%token T_SINT64           sint64
+%token T_FIXED32          fixed32
+%token T_FIXED64          fixed64
+%token T_SFIXED32         sfixed32
+%token T_SFIXED64         sfixed64
+%token T_BOOL             bool
+%token T_STRING           string
+%token T_BYTES            bytes
+
+%token T_INT_LITERAL      -?[0-9]+
+%token T_FLOAT_LITERAL    -?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?
+%token T_STRING_LITERAL   "([^"\\]*(?:\\.[^"\\]*)*)"
+%token T_BOOL_LITERAL     true|false
+%token T_COMMENT          //.*?$|/\*(.|\n)*?\*/
+
+// Add T_COLON token
+%token T_COLON           :
+%token T_SEMICOLON        ;
+%token T_EQUALS           =
+%token T_LPAREN           \(
+%token T_RPAREN           \)
+%token T_LBRACE           {
+%token T_RBRACE           }
+%token T_LBRACK           \[
+%token T_RBRACK           \]
+%token T_LT               <
+%token T_GT               >
+%token T_COMMA            ,
+%token T_DOT              \.
+
+%token T_TO               to
+%token T_IDENTIFIER       [a-zA-Z_][a-zA-Z0-9_]*
+
+%skip T_WHITESPACE        \s+
+
+// Parser rules
+#Proto -> {
+    $syntaxDecl = $children[0];
+    $imports = [];
+    $package = null;
+    $options = [];
+    $topLevelDefs = [];
+
+    foreach (array_slice($children, 1) as $child) {
+        if ($child instanceof \Butschster\ProtoParser\Ast\ImportDeclNode) {
+            $imports[] = $child;
+        } elseif ($child instanceof \Butschster\ProtoParser\Ast\PackageDeclNode) {
+            $package = $child;
+        } elseif ($child instanceof \Butschster\ProtoParser\Ast\OptionDeclNode) {
+            $options[] = $child;
+        } else {
+            $topLevelDefs[] = $child;
+        }
+    }
+
+    return new \Butschster\ProtoParser\Ast\ProtoNode(
+        syntax: $syntaxDecl,
+        imports: $imports,
+        package: $package,
+        options: $options,
+        topLevelDefs: $topLevelDefs
+    );
+}
+    : SyntaxDecl() (
+        ImportDecl() |
+        PackageDecl() |
+        OptionDecl() |
+        TopLevelDef()
+    )*
+    ;
+
+#SyntaxDecl -> {
+    // TODO: refactor
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    $syntax = trim($children[0]->getValue(), '"\'');
+    return new \Butschster\ProtoParser\Ast\SyntaxDeclNode($syntax, $comments);
+}
+    : Comment()* ::T_SYNTAX:: ::T_EQUALS:: <T_STRING_LITERAL> ::T_SEMICOLON::
+    ;
+
+#ImportDecl -> {
+    // TODO: refactor
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    $modifier = $children[0] instanceof \Butschster\ProtoParser\Ast\ImportModifier
+        ? $children[0]
+        : null;
+    $pathToken = $modifier ? $children[1] : $children[0];
+    $path = trim($pathToken->getValue(), '"\'');
+    $path = preg_replace('/\\\\{2,}/', '\\', $path);
+
+    return new \Butschster\ProtoParser\Ast\ImportDeclNode(
+        path: $path,
+        modifier: $modifier,
+        comments: array_values($comments),
+    );
+}
+    : Comment()* ::T_IMPORT:: ImportModifier()? <T_STRING_LITERAL> ::T_SEMICOLON::
+    ;
+
+ImportModifier -> {
+    if ($token->getValue() === 'public') {
+        return \Butschster\ProtoParser\Ast\ImportModifier::Public;
+    } elseif ($token->getValue() === 'weak') {
+        return \Butschster\ProtoParser\Ast\ImportModifier::Weak;
+    }
+    return null;
+}
+    : <T_WEAK> | <T_PUBLIC>
+    ;
+
+#PackageDecl -> {
+    // TODO: refactor
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    $parts = \array_filter(array_map(fn($child) => $child->getValue(), $children), fn($part) => $part !== '.');
+    $fullIdent = implode('.', $parts);
+    return new \Butschster\ProtoParser\Ast\PackageDeclNode($fullIdent, $comments);
+}
+    : Comment()* ::T_PACKAGE:: FullIdent() ::T_SEMICOLON::
+    ;
+
+
+#OptionDecl -> {
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    $name = $children[0];
+    $value = $children[1];
+
+    return new \Butschster\ProtoParser\Ast\OptionDeclNode(
+        name: $name,
+        value: $value,
+        comments: array_values($comments),
+    );
+}
+    : Comment()* ::T_OPTION:: OptionName() ::T_EQUALS:: Constant() ::T_SEMICOLON::
+    ;
+
+OptionName -> {
+    $parts = \array_filter(array_map(fn($child) => $child->getValue(), $children), fn($part) => $part !== '.');
+    return implode('.', $parts);
+}
+    : ((::T_LPAREN:: FullIdent() ::T_RPAREN::) | FullIdent()) (::T_DOT:: FullIdent())*
+    ;
+
+TopLevelDef
+    : MessageDef()
+    | EnumDef()
+    | ServiceDef()
+    ;
+
+#MessageDef -> {
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    $name = $children[0]->getValue();
+    $fields = [];
+    $enums = [];
+    $messages = [];
+
+    foreach(array_slice($children, 1) as $child) {
+        if (
+        $child instanceof \Butschster\ProtoParser\Ast\FieldDeclNode
+        || $child instanceof \Butschster\ProtoParser\Ast\MapFieldDeclNode
+        || $child instanceof \Butschster\ProtoParser\Ast\OneofDeclNode
+        ) {
+            $fields[] = $child;
+        } elseif ($child instanceof \Butschster\ProtoParser\Ast\EnumDefNode) {
+            $enums[] = $child;
+        } elseif ($child instanceof \Butschster\ProtoParser\Ast\MessageDefNode) {
+            $messages[] = $child;
+        }
+    }
+
+    return new \Butschster\ProtoParser\Ast\MessageDefNode(
+        name: $name,
+        fields: $fields,
+        messages: $messages,
+        enums: $enums,
+        comments: array_values($comments),
+    );
+}
+    : Comment()* ::T_MESSAGE:: <T_IDENTIFIER> ::T_LBRACE::
+        (
+            FieldDecl() |
+            EnumDef() |
+            MessageDef() |
+            OptionDecl() |
+            OneofDecl() |
+            MapFieldDecl() |
+            Reserved() |
+            Extensions()
+        )*
+    ::T_RBRACE::
+    ;
+
+#FieldDecl -> {
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    if ($children[0] instanceof \Butschster\ProtoParser\Ast\FieldModifier) {
+        $modifier = $children[0];
+        $children = array_slice($children, 1);
+    }
+
+    $type = $children[0];
+    $name = $children[1]->getValue();
+    $number = (int)$children[2]->getValue();
+    $options = isset($children[3]) ? $children[3] : [];
+
+    return new \Butschster\ProtoParser\Ast\FieldDeclNode(
+        modifier: $modifier,
+        type: $type,
+        name: $name,
+        number: $number,
+        options: $options,
+        comments: array_values($comments),
+    );
+}
+    : Comment()* FieldModifier()? Type() <T_IDENTIFIER> ::T_EQUALS:: <T_INT_LITERAL> FieldOptions()? ::T_SEMICOLON:: Comment()*
+    ;
+
+FieldModifier  -> {
+    return match ($token->getValue()) {
+        'repeated' => \Butschster\ProtoParser\Ast\FieldModifier::Repeated,
+        'optional' => \Butschster\ProtoParser\Ast\FieldModifier::Optional,
+        'required' => \Butschster\ProtoParser\Ast\FieldModifier::Required,
+        default => null
+    };
+}
+    : ::T_REPEATED:: | ::T_OPTIONAL:: | ::T_REQUIRED::
+    ;
+
+Type -> {
+    if ($children instanceof \Butschster\ProtoParser\Ast\BuiltInType) {
+        return new \Butschster\ProtoParser\Ast\FieldType($children->value);
+    }
+
+    $parts = \array_filter(array_map(fn($child) => $child->getValue(), $children), fn($part) => $part !== '.');
+
+    return new \Butschster\ProtoParser\Ast\FieldType(implode('.', $parts));
+}
+    : BuiltInType() | ((::T_DOT::)? TypeName())
+    ;
+
+TypeName
+    : (<T_DOT>)? <T_IDENTIFIER> (<T_DOT> <T_IDENTIFIER>)*
+    ;
+
+FieldOptions -> {
+    $options = [];
+    foreach ($children as $option) {
+        if ($option instanceof \Butschster\ProtoParser\Ast\OptionDeclNode) {
+            $options[$option->name] = $option->value;
+        }
+    }
+    return ['FieldOptions' => $options];
+}
+    : ::T_LBRACK:: FieldOption() (::T_COMMA:: FieldOption())* ::T_RBRACK::
+    ;
+
+#FieldOption -> {
+    $name = $children[0];
+    $value = $children[1];
+
+    return new \Butschster\ProtoParser\Ast\OptionDeclNode(
+        name: $name,
+        value: $value
+    );
+}
+    : OptionName() ::T_EQUALS:: FieldOptionValue()
+    ;
+
+FieldOptionValue
+    : Constant()
+    | ComplexOptionValue()
+    | <T_STRING_LITERAL>
+    | <T_BOOL_LITERAL>
+    ;
+
+ComplexOptionValue -> {
+    $result = [];
+    foreach ($children as $child) {
+        if ($child instanceof \Butschster\ProtoParser\Ast\OptionDeclNode) {
+            $result[$child->name] = $child->value;
+        }
+    }
+    return $result;
+}
+    : ::T_LBRACE:: (ComplexOptionField() (::T_COMMA:: ComplexOptionField())*)? ::T_RBRACE::
+    ;
+
+ComplexOptionField -> {
+    return new \Butschster\ProtoParser\Ast\OptionDeclNode(
+        name: $children[0],
+        value: $children[1]
+    );
+}
+    : <T_IDENTIFIER> ::T_COLON:: (Constant() | ComplexOptionValue())
+    ;
+
+Constant -> {
+    $el = \is_array($children) ? $children[0] : $children;
+
+    if ($el instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+        $value = $el->getValue();
+        $el = match (true) {
+            $el->getName() === 'T_INT_LITERAL' => (int)$value,
+            $el->getName() === 'T_FLOAT_LITERAL' => (float)$value,
+            $el->getName() === 'T_BOOL_LITERAL' => $value === 'true',
+            $value === 'null' => null,
+            $value === 'true' => true,
+            $value === 'false' => false,
+            default => trim($value, '"\'')
+        };
+    }
+
+    return $el;
+}
+    : <T_INT_LITERAL> | <T_FLOAT_LITERAL> | <T_STRING_LITERAL> | <T_BOOL_LITERAL> | FullIdent()
+    ;
+
+#OneofDecl -> {
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    return new \Butschster\ProtoParser\Ast\OneofDeclNode(
+        name: $children[0]->getValue(),
+        fields: array_values(array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\OneofFieldNode)),
+        options: array_values(array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\OptionDeclNode)),
+        comments: array_values($comments),
+    );
+}
+    : Comment()* ::T_ONEOF:: <T_IDENTIFIER> ::T_LBRACE:: (OptionDecl() | OneofField())* ::T_RBRACE::
+    ;
+
+#OneofField -> {
+    return new \Butschster\ProtoParser\Ast\OneofFieldNode(
+        type: $children[0],
+        name: $children[1]->getValue(),
+        number: (int)$children[2]->getValue(),
+        options: isset($children['FieldOptions']) ? $children['FieldOptions'] : []
+    );
+}
+    : Type() <T_IDENTIFIER> ::T_EQUALS:: <T_INT_LITERAL> FieldOptions()? ::T_SEMICOLON::
+    ;
+
+#MapFieldDecl -> {
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    $keyType = $children[0];
+    $type = $children[1];
+    $name = $children[2]->getValue();
+    $number = (int)$children[3]->getValue();
+
+    return new \Butschster\ProtoParser\Ast\MapFieldDeclNode(
+        keyType: $keyType,
+        valueType: $type,
+        name: $name,
+        number: $number,
+        options: isset($children[4]) ? $children[4] : [],
+        comments: array_values($comments),
+    );
+}
+    : Comment()* ::T_MAP:: ::T_LT:: Type() ::T_COMMA:: Type() ::T_GT::
+      <T_IDENTIFIER> ::T_EQUALS:: <T_INT_LITERAL> FieldOptions()? ::T_SEMICOLON::
+    ;
+
+#Reserved -> {
+    return new \Butschster\ProtoParser\Ast\ReservedNode(
+        ranges: $children
+    );
+}
+    : ::T_RESERVED:: (Ranges() | FieldNames()) ::T_SEMICOLON::
+    ;
+
+Ranges -> {
+    return $children;
+}
+    : Range() (::T_COMMA:: Range())*
+    ;
+
+#Range -> {
+    if (count($children) === 1) {
+        return new \Butschster\ProtoParser\Ast\ReservedNumber((int)$children[0]->getValue());
+    } else {
+        $start = (int)$children[0]->getValue();
+        $end = $children[1]->getValue() === 'max' ? 'max' : (int)$children[1]->getValue();
+        return new \Butschster\ProtoParser\Ast\ReservedRange($start, $end);
+    }
+}
+    : <T_INT_LITERAL> RangeTo()?
+    ;
+
+FieldNames -> {
+    return array_map(function($child) {
+        return trim($child->getValue(), '"\'');
+    }, $children);
+}
+    : <T_STRING_LITERAL> (::T_COMMA:: <T_STRING_LITERAL>)*
+    ;
+
+#Extensions -> Butschster\ProtoParser\Ast\ExtensionsNode
+    : ::T_EXTENSIONS:: Ranges() ::T_SEMICOLON::
+    ;
+
+#EnumDef -> {
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    $name = $children[0]->getValue();
+    $fields = [];
+
+    foreach (array_slice($children, 1) as $child) {
+        if ($child instanceof \Butschster\ProtoParser\Ast\OptionDeclNode ||
+            $child instanceof \Butschster\ProtoParser\Ast\EnumFieldNode ||
+            $child instanceof \Butschster\ProtoParser\Ast\ReservedNode) {
+            $fields[] = $child;
+        }
+    }
+
+    return new \Butschster\ProtoParser\Ast\EnumDefNode(
+        name: $name,
+        fields: $fields,
+        comments: array_values($comments),
+    );
+}
+    : Comment()* ::T_ENUM:: <T_IDENTIFIER> ::T_LBRACE::
+        (OptionDecl() | EnumField() | Reserved())*
+    ::T_RBRACE::
+    ;
+
+#EnumField -> {
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    $name = $children[0]->getValue();
+    $number = (int)$children[1]->getValue();
+    $options = isset($children[2]) ? $children[2] : [];
+
+    return new \Butschster\ProtoParser\Ast\EnumFieldNode(
+        name: $name,
+        number: $number,
+        options: $options,
+        comments: array_values($comments),
+    );
+}
+    : Comment()* <T_IDENTIFIER> ::T_EQUALS:: <T_INT_LITERAL> FieldOptions()? ::T_SEMICOLON::
+    ;
+
+#ServiceDef -> {
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    $name = $children[0]->getValue();
+    $methods = [];
+    $options = [];
+
+    foreach (array_slice($children, 1) as $child) {
+        if ($child instanceof \Butschster\ProtoParser\Ast\RpcDeclNode) {
+            $methods[] = $child;
+        } elseif ($child instanceof \Butschster\ProtoParser\Ast\OptionDeclNode) {
+            $options[] = $child;
+        }
+    }
+
+    return new \Butschster\ProtoParser\Ast\ServiceDefNode(
+        name: $name,
+        methods: $methods,
+        options: $options,
+        comments: array_values($comments),
+    );
+}
+    : Comment()* ::T_SERVICE:: <T_IDENTIFIER> ::T_LBRACE::
+        (OptionDecl() | RpcDecl())*
+    ::T_RBRACE::
+    ;
+
+#RpcDecl -> {
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    $name = $children[0]->getValue();
+    $inputType = $children[1];
+    $outputType = $children[2];
+    $options = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\OptionDeclNode);
+
+    return new \Butschster\ProtoParser\Ast\RpcDeclNode(
+        name: $name,
+        inputType: $inputType,
+        outputType: $outputType,
+        options: $options,
+        comments: array_values($comments),
+    );
+}
+    : Comment()* ::T_RPC:: <T_IDENTIFIER> ::T_LPAREN:: MessageType() ::T_RPAREN::
+      ::T_RETURNS:: ::T_LPAREN:: MessageType() ::T_RPAREN::
+      (::T_LBRACE:: (OptionDecl())* ::T_RBRACE:: | ::T_SEMICOLON::)
+    ;
+
+#MessageType -> {
+    $isStream = false;
+    if ($children[0]->getName() === 'T_STREAM') {
+        $isStream = true;
+        $children = array_slice($children, 1);
+    }
+
+    $parts = \array_filter(array_map(fn($child) => $child->getValue(), $children), fn($part) => $part !== '.');
+    return new \Butschster\ProtoParser\Ast\RpcMessageType(implode('.', $parts), $isStream);
+}
+    : <T_STREAM>? (::T_DOT::)? TypeName() (::T_DOT:: TypeName())*
+    ;
+
+FullIdent
+    : <T_IDENTIFIER> (<T_DOT> <T_IDENTIFIER>)*
+    ;
+
+#BuiltInType -> {
+    return \Butschster\ProtoParser\Ast\BuiltInType::tryFrom($children->getValue());
+}
+    : <T_DOUBLE> | <T_FLOAT> | <T_INT32> | <T_INT64> | <T_UINT32> | <T_UINT64>
+    | <T_SINT32> | <T_SINT64> | <T_FIXED32> | <T_FIXED64> | <T_SFIXED32> | <T_SFIXED64>
+    | <T_BOOL> | <T_STRING> | <T_BYTES>
+    ;
+
+#Comment -> {
+    $comment = $children->getValue();
+    // remove /** */ and //
+    $comment = trim(preg_replace('/^\/\*+|\*+\/$|^\s*\/\/+/', '', $comment));
+    return new \Butschster\ProtoParser\Ast\CommentNode($comment);
+}
+    : <T_COMMENT>
+    ;
+
+RangeTo -> {
+    return $children[0] instanceof \Butschster\ProtoParser\Ast\ReservedNumber
+        ? null
+        : $children[0];
+}
+    : ::T_TO:: (<T_MAX> | <T_INT_LITERAL>)
+    ;

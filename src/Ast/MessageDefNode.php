@@ -9,10 +9,15 @@ use Phplrt\Contracts\Ast\NodeInterface;
 final readonly class MessageDefNode implements NodeInterface
 {
     public function __construct(
+        /** @var non-empty-string */
         public string $name,
+        /** @var FieldDeclNode[] */
         public array $fields = [],
+        /** @var MessageDefNode */
         public array $messages = [],
+        /** @var EnumDefNode */
         public array $enums = [],
+        /** @var CommentNode[] */
         public array $comments = [],
     ) {}
 

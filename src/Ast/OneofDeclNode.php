@@ -10,8 +10,11 @@ final readonly class OneofDeclNode implements NodeInterface
 {
     public function __construct(
         public string $name,
+        /** @var FieldDeclNode[] */
         public array $fields = [],
+        /** @var OptionDeclNode[] */
         public array $options = [],
+        /** @var CommentNode[] */
         public array $comments = [],
     ) {}
 

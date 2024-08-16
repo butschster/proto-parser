@@ -7,6 +7,7 @@ namespace Butschster\ProtoParser\Ast;
 final readonly class CommentNode
 {
     public function __construct(
+        /** @var non-empty-string */
         public string $text,
     ) {}
 

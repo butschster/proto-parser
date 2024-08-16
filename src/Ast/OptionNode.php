@@ -8,7 +8,9 @@ final readonly class OptionNode
 {
     public function __construct(
         public string $name,
+        /** @var mixed|OptionDeclNode */
         public mixed $value,
+        /** @var CommentNode[] */
         public array $comments = [],
     ) {}
 

@@ -9,8 +9,10 @@ use Phplrt\Contracts\Ast\NodeInterface;
 final readonly class SyntaxDeclNode implements NodeInterface
 {
     public function __construct(
+        /** @var non-empty-string */
         public string $syntax,
-        public array $comments = []
+        /** @var CommentNode[] */
+        public array $comments = [],
     ) {}
 
     public function getIterator(): \Traversable

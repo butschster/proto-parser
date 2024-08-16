@@ -9,6 +9,7 @@ use Phplrt\Contracts\Ast\NodeInterface;
 final readonly class ReservedNode implements NodeInterface
 {
     public function __construct(
+        /** @var ReservedRange[]|ReservedNumber[] */
         public array $ranges,
     ) {}
 

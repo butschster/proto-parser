@@ -10,9 +10,12 @@ final readonly class ProtoNode implements NodeInterface
 {
     public function __construct(
         public SyntaxDeclNode $syntax,
+        /** @var ImportDeclNode[] */
         public array $imports = [],
         public ?PackageDeclNode $package = null,
+        /** @var OptionDeclNode[] */
         public array $options = [],
+        /** @var MessageDefNode[] */
         public array $topLevelDefs = [],
     ) {}
 

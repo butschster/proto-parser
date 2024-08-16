@@ -11,9 +11,12 @@ final readonly class MapFieldDeclNode implements NodeInterface
     public function __construct(
         public FieldType $keyType,
         public FieldType $valueType,
+        /** @var non-empty-string */
         public string $name,
         public int $number,
+        /** @var OptionDeclNode[] */
         public array $options = [],
+        /** @var CommentNode[] */
         public array $comments = [],
     ) {}
 

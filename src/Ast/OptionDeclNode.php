@@ -10,7 +10,9 @@ final readonly class OptionDeclNode implements NodeInterface
 {
     public function __construct(
         public ?string $name,
+        /** @var CommentNode[] */
         public array $comments = [],
+        /** @var OptionNode[] */
         public array $options = [],
     ) {}
 

@@ -158,15 +158,18 @@ ImportModifier -> {
     $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
 
     $name = $children[0];
-    $value = $children[1];
+    $values = \array_map(
+        fn(mixed $child) => $child instanceof \Butschster\ProtoParser\Ast\OptionNode ? $child : new \Butschster\ProtoParser\Ast\OptionNode($name, $child),
+        \array_slice($children, 1)
+    );
 
     return new \Butschster\ProtoParser\Ast\OptionDeclNode(
         name: $name,
-        value: $value,
         comments: array_values($comments),
+        options: \array_values($values),
     );
 }
-    : Comment()* ::T_OPTION:: OptionName() ::T_EQUALS:: Constant() ::T_SEMICOLON::
+    : Comment()* ::T_OPTION:: OptionName() ::T_EQUALS:: OptionValue() ::T_SEMICOLON::
     ;
 
 OptionName -> {
@@ -174,6 +177,36 @@ OptionName -> {
     return implode('.', $parts);
 }
     : ((::T_LPAREN:: FullIdent() ::T_RPAREN::) | FullIdent()) (::T_DOT:: FullIdent())*
+    ;
+
+OptionValue
+    : Constant()
+    | MessageLiteralWithBraces()
+    ;
+
+MessageLiteralWithBraces -> {
+    $result = [];
+    foreach ($children as $child) {
+        if ($child instanceof \Butschster\ProtoParser\Ast\OptionNode) {
+            $result[$child->name] = $child;
+        }
+    }
+    return $result;
+}
+    : ::T_LBRACE:: (MessageLiteralField()* (::T_COMMA:: MessageLiteralField())*)? ::T_RBRACE::
+    ;
+
+MessageLiteralField -> {
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+    return new \Butschster\ProtoParser\Ast\OptionNode(
+        name: $children[0],
+        value: $children[1],
+        comments: array_values($comments),
+    );
+}
+    :  Comment()* OptionName() ::T_COLON:: (Constant() | MessageLiteralWithBraces()) Comment()*
     ;
 
 TopLevelDef
@@ -286,24 +319,21 @@ TypeName
     ;
 
 FieldOptions -> {
-    $options = [];
-    foreach ($children as $option) {
-        if ($option instanceof \Butschster\ProtoParser\Ast\OptionDeclNode) {
-            $options[$option->name] = $option->value;
+    $result = [];
+    foreach ($children as $child) {
+        if ($child instanceof \Butschster\ProtoParser\Ast\OptionNode) {
+            $result[$child->name] = $child;
         }
     }
-    return ['FieldOptions' => $options];
+    return ['FieldOptions' => $result];
 }
     : ::T_LBRACK:: FieldOption() (::T_COMMA:: FieldOption())* ::T_RBRACK::
     ;
 
 #FieldOption -> {
-    $name = $children[0];
-    $value = $children[1];
-
-    return new \Butschster\ProtoParser\Ast\OptionDeclNode(
-        name: $name,
-        value: $value
+    return new \Butschster\ProtoParser\Ast\OptionNode(
+        name: $children[0],
+        value: $children[1]
     );
 }
     : OptionName() ::T_EQUALS:: FieldOptionValue()
@@ -319,8 +349,8 @@ FieldOptionValue
 ComplexOptionValue -> {
     $result = [];
     foreach ($children as $child) {
-        if ($child instanceof \Butschster\ProtoParser\Ast\OptionDeclNode) {
-            $result[$child->name] = $child->value;
+        if ($child instanceof \Butschster\ProtoParser\Ast\OptionNode) {
+            $result[$child->name] = $child;
         }
     }
     return $result;
@@ -329,7 +359,7 @@ ComplexOptionValue -> {
     ;
 
 ComplexOptionField -> {
-    return new \Butschster\ProtoParser\Ast\OptionDeclNode(
+    return new \Butschster\ProtoParser\Ast\OptionNode(
         name: $children[0],
         value: $children[1]
     );
@@ -524,7 +554,7 @@ FieldNames -> {
         name: $name,
         inputType: $inputType,
         outputType: $outputType,
-        options: $options,
+        options: \array_values($options),
         comments: array_values($comments),
     );
 }

@@ -8,6 +8,7 @@ use Butschster\ProtoParser\Ast\FieldDeclNode;
 use Butschster\ProtoParser\Ast\FieldModifier;
 use Butschster\ProtoParser\Ast\FieldType;
 use Butschster\ProtoParser\Ast\MessageDefNode;
+use Butschster\ProtoParser\Ast\OptionNode;
 use Butschster\ProtoParser\Ast\ProtoNode;
 
 final class FieldDeclNodeTest extends TestCase
@@ -98,8 +99,8 @@ PROTO,
         $this->assertSame(3, $field->number);
         $this->assertNull($field->modifier);
         $this->assertCount(2, $field->options);
-        $this->assertTrue($field->options['deprecated']);
-        $this->assertFalse($field->options['packed']);
+        $this->assertEquals(new OptionNode('deprecated', true), $field->options['deprecated']);
+        $this->assertEquals(new OptionNode('packed', false), $field->options['packed']);
     }
 
     public function testFieldDeclarationWithCustomType(): void
@@ -166,8 +167,8 @@ PROTO,
         $this->assertSame(6, $field->number);
         $this->assertSame(FieldModifier::Optional, $field->modifier);
         $this->assertCount(2, $field->options);
-        $this->assertSame('test', $field->options['default']);
-        $this->assertSame('customField', $field->options['json_name']);
+        $this->assertEquals(new OptionNode('default', 'test'), $field->options['default']);
+        $this->assertEquals(new OptionNode('json_name', 'customField'), $field->options['json_name']);
     }
 
     private function parseProto(string $protoDefinition): ProtoNode

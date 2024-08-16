@@ -9,6 +9,7 @@ use Butschster\ProtoParser\Ast\FieldType;
 use Butschster\ProtoParser\Ast\OneofDeclNode;
 use Butschster\ProtoParser\Ast\OneofFieldNode;
 use Butschster\ProtoParser\Ast\OptionDeclNode;
+use Butschster\ProtoParser\Ast\OptionNode;
 
 final class OneofDeclNodeTest extends TestCase
 {
@@ -82,12 +83,12 @@ PROTO,
         $option1 = $oneof->options[0];
         $this->assertInstanceOf(OptionDeclNode::class, $option1);
         $this->assertSame('my_option.a', $option1->name);
-        $this->assertTrue($option1->value);
+        $this->assertEquals(new OptionNode('my_option.a', true), $option1->options[0]);
 
         $option2 = $oneof->options[1];
         $this->assertInstanceOf(OptionDeclNode::class, $option2);
         $this->assertSame('my_option.b', $option2->name);
-        $this->assertSame(42, $option2->value);
+        $this->assertEquals(new OptionNode('my_option.b', 42), $option2->options[0]);
     }
 
     public function testOneofFieldWithOptions(): void
@@ -110,7 +111,12 @@ PROTO,
         $this->assertCount(1, $oneof->fields);
 
         $field = $oneof->fields[0];
-        $this->assertSame(['my_option' => 'test'], $field->options);
+        $this->assertEquals([
+            'my_option' => new OptionNode(
+                'my_option',
+                'test',
+            ),
+        ], $field->options);
     }
 
     public function testEmptyOneofDecl(): void

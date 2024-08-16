@@ -6,6 +6,7 @@ namespace Butschster\Tests\Ast;
 
 use Butschster\ProtoParser\Ast\FieldType;
 use Butschster\ProtoParser\Ast\MapFieldDeclNode;
+use Butschster\ProtoParser\Ast\OptionNode;
 
 final class MapFieldDeclNodeTest extends TestCase
 {
@@ -54,7 +55,12 @@ PROTO,
         $this->assertEquals(new FieldType('int32'), $field->valueType);
         $this->assertSame('test_map', $field->name);
         $this->assertSame(1, $field->number);
-        $this->assertSame(['deprecated' => true], $field->options);
+        $this->assertEquals([
+            'deprecated' => new OptionNode(
+                'deprecated',
+                true
+            )
+        ], $field->options);
     }
 
     public function testMapFieldWithCustomKeyType(): void

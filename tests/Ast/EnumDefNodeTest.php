@@ -7,6 +7,7 @@ namespace Butschster\Tests\Ast;
 use Butschster\ProtoParser\Ast\EnumDefNode;
 use Butschster\ProtoParser\Ast\EnumFieldNode;
 use Butschster\ProtoParser\Ast\OptionDeclNode;
+use Butschster\ProtoParser\Ast\OptionNode;
 use Butschster\ProtoParser\Ast\ReservedNode;
 use Butschster\ProtoParser\Ast\ReservedNumber;
 use Butschster\ProtoParser\Ast\ReservedRange;
@@ -74,7 +75,7 @@ final class EnumDefNodeTest extends TestCase
 
         $this->assertInstanceOf(OptionDeclNode::class, $enum->fields[0]);
         $this->assertSame('allow_alias', $enum->fields[0]->name);
-        $this->assertTrue($enum->fields[0]->value);
+        $this->assertEquals(new OptionNode('allow_alias', true), $enum->fields[0]->options[0]);
 
         $this->assertEnumField($enum->fields[1], 'UNKNOWN', 0);
         $this->assertEnumField($enum->fields[2], 'STARTED', 1);
@@ -167,8 +168,14 @@ final class EnumDefNodeTest extends TestCase
         int $expectedNumber,
         array $expectedOptions = [],
     ): void {
+        $options = [];
+
+        foreach ($expectedOptions as $key => $value) {
+            $options[$key] = new OptionNode($key, $value);
+        }
+
         $this->assertSame($expectedName, $field->name);
         $this->assertSame($expectedNumber, $field->number);
-        $this->assertEquals($expectedOptions, $field->options);
+        $this->assertEquals($options, $field->options);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Butschster\Tests\Ast;
 
+use Butschster\ProtoParser\Ast\OptionNode;
 use Butschster\ProtoParser\Ast\ProtoNode;
 use Butschster\ProtoParser\Ast\SyntaxDeclNode;
 use Butschster\ProtoParser\Ast\PackageDeclNode;
@@ -51,11 +52,11 @@ final class ProtoNodeTest extends TestCase
 
         $this->assertInstanceOf(OptionDeclNode::class, $node->options[0]);
         $this->assertSame('php_metadata_namespace', $node->options[0]->name);
-        $this->assertSame('GRPC\\\\ProtobufMetadata\\\\Subtitles\\\\v1', $node->options[0]->value);
+        $this->assertEquals(new OptionNode('php_metadata_namespace', 'GRPC\\\\ProtobufMetadata\\\\Subtitles\\\\v1'), $node->options[0]->options[0]);
 
         $this->assertInstanceOf(OptionDeclNode::class, $node->options[1]);
         $this->assertSame('php_namespace', $node->options[1]->name);
-        $this->assertSame('GRPC\\\\Services\\\\Subtitles\\\\v1', $node->options[1]->value);
+        $this->assertEquals(new OptionNode('php_namespace', 'GRPC\\\\Services\\\\Subtitles\\\\v1'), $node->options[1]->options[0]);
 
         // Test top-level definitions (only checking for the presence of the message)
         $this->assertCount(1, $node->topLevelDefs);

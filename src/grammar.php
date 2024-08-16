@@ -97,12 +97,12 @@ return [
         13 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
         14 => new \Phplrt\Parser\Grammar\Lexeme('T_WEAK', true),
         15 => new \Phplrt\Parser\Grammar\Lexeme('T_PUBLIC', true),
-        16 => new \Phplrt\Parser\Grammar\Concatenation([188, 189]),
+        16 => new \Phplrt\Parser\Grammar\Concatenation([203, 204]),
         17 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
         18 => new \Phplrt\Parser\Grammar\Lexeme('T_PACKAGE', false),
         19 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
         20 => new \Phplrt\Parser\Grammar\Concatenation([31, 32]),
-        21 => new \Phplrt\Parser\Grammar\Alternation([83, 84, 85, 86, 16]),
+        21 => new \Phplrt\Parser\Grammar\Alternation([33, 34]),
         22 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
         23 => new \Phplrt\Parser\Grammar\Lexeme('T_OPTION', false),
         24 => new \Phplrt\Parser\Grammar\Lexeme('T_EQUALS', false),
@@ -114,182 +114,197 @@ return [
         30 => new \Phplrt\Parser\Grammar\Concatenation([29, 16]),
         31 => new \Phplrt\Parser\Grammar\Alternation([28, 16]),
         32 => new \Phplrt\Parser\Grammar\Repetition(30, 0, INF),
-        33 => new \Phplrt\Parser\Grammar\Alternation(['FieldDecl', 'EnumDef', 'MessageDef', 'OptionDecl', 'OneofDecl', 'MapFieldDecl', 'Reserved']),
-        34 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
-        35 => new \Phplrt\Parser\Grammar\Lexeme('T_MESSAGE', false),
-        36 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        37 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
-        38 => new \Phplrt\Parser\Grammar\Repetition(33, 0, INF),
-        39 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
-        40 => new \Phplrt\Parser\Grammar\Alternation([51, 52, 53]),
-        41 => new \Phplrt\Parser\Grammar\Alternation(['BuiltInType', 54]),
-        42 => new \Phplrt\Parser\Grammar\Concatenation([64, 'FieldOption', 65, 66]),
-        43 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
-        44 => new \Phplrt\Parser\Grammar\Optional(40),
-        45 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        46 => new \Phplrt\Parser\Grammar\Lexeme('T_EQUALS', false),
-        47 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
-        48 => new \Phplrt\Parser\Grammar\Optional(42),
-        49 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
-        50 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
-        51 => new \Phplrt\Parser\Grammar\Lexeme('T_REPEATED', false),
-        52 => new \Phplrt\Parser\Grammar\Lexeme('T_OPTIONAL', false),
-        53 => new \Phplrt\Parser\Grammar\Lexeme('T_REQUIRED', false),
-        54 => new \Phplrt\Parser\Grammar\Concatenation([59, 60, 61]),
-        55 => new \Phplrt\Parser\Grammar\Lexeme('T_DOT', true),
-        56 => new \Phplrt\Parser\Grammar\Lexeme('T_DOT', true),
-        57 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        58 => new \Phplrt\Parser\Grammar\Concatenation([56, 57]),
+        33 => new \Phplrt\Parser\Grammar\Alternation([98, 99, 100, 101, 16]),
+        34 => new \Phplrt\Parser\Grammar\Concatenation([41, 42, 43]),
+        35 => new \Phplrt\Parser\Grammar\Concatenation([44, 20, 45, 46, 47]),
+        36 => new \Phplrt\Parser\Grammar\Lexeme('T_COMMA', false),
+        37 => new \Phplrt\Parser\Grammar\Concatenation([36, 35]),
+        38 => new \Phplrt\Parser\Grammar\Repetition(35, 0, INF),
+        39 => new \Phplrt\Parser\Grammar\Repetition(37, 0, INF),
+        40 => new \Phplrt\Parser\Grammar\Concatenation([38, 39]),
+        41 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
+        42 => new \Phplrt\Parser\Grammar\Optional(40),
+        43 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
+        44 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
+        45 => new \Phplrt\Parser\Grammar\Lexeme('T_COLON', false),
+        46 => new \Phplrt\Parser\Grammar\Alternation([33, 34]),
+        47 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
+        48 => new \Phplrt\Parser\Grammar\Alternation(['FieldDecl', 'EnumDef', 'MessageDef', 'OptionDecl', 'OneofDecl', 'MapFieldDecl', 'Reserved']),
+        49 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
+        50 => new \Phplrt\Parser\Grammar\Lexeme('T_MESSAGE', false),
+        51 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        52 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
+        53 => new \Phplrt\Parser\Grammar\Repetition(48, 0, INF),
+        54 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
+        55 => new \Phplrt\Parser\Grammar\Alternation([66, 67, 68]),
+        56 => new \Phplrt\Parser\Grammar\Alternation(['BuiltInType', 69]),
+        57 => new \Phplrt\Parser\Grammar\Concatenation([79, 'FieldOption', 80, 81]),
+        58 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
         59 => new \Phplrt\Parser\Grammar\Optional(55),
         60 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        61 => new \Phplrt\Parser\Grammar\Repetition(58, 0, INF),
-        62 => new \Phplrt\Parser\Grammar\Lexeme('T_COMMA', false),
-        63 => new \Phplrt\Parser\Grammar\Concatenation([62, 'FieldOption']),
-        64 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACK', false),
-        65 => new \Phplrt\Parser\Grammar\Repetition(63, 0, INF),
-        66 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACK', false),
-        67 => new \Phplrt\Parser\Grammar\Alternation([21, 69, 70, 71]),
-        68 => new \Phplrt\Parser\Grammar\Lexeme('T_EQUALS', false),
-        69 => new \Phplrt\Parser\Grammar\Concatenation([77, 78, 79]),
-        70 => new \Phplrt\Parser\Grammar\Lexeme('T_STRING_LITERAL', true),
-        71 => new \Phplrt\Parser\Grammar\Lexeme('T_BOOL_LITERAL', true),
-        72 => new \Phplrt\Parser\Grammar\Concatenation([80, 81, 82]),
-        73 => new \Phplrt\Parser\Grammar\Lexeme('T_COMMA', false),
-        74 => new \Phplrt\Parser\Grammar\Concatenation([73, 72]),
-        75 => new \Phplrt\Parser\Grammar\Repetition(74, 0, INF),
-        76 => new \Phplrt\Parser\Grammar\Concatenation([72, 75]),
-        77 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
-        78 => new \Phplrt\Parser\Grammar\Optional(76),
-        79 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
-        80 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        81 => new \Phplrt\Parser\Grammar\Lexeme('T_COLON', false),
-        82 => new \Phplrt\Parser\Grammar\Alternation([21, 69]),
-        83 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
-        84 => new \Phplrt\Parser\Grammar\Lexeme('T_FLOAT_LITERAL', true),
+        61 => new \Phplrt\Parser\Grammar\Lexeme('T_EQUALS', false),
+        62 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
+        63 => new \Phplrt\Parser\Grammar\Optional(57),
+        64 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
+        65 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
+        66 => new \Phplrt\Parser\Grammar\Lexeme('T_REPEATED', false),
+        67 => new \Phplrt\Parser\Grammar\Lexeme('T_OPTIONAL', false),
+        68 => new \Phplrt\Parser\Grammar\Lexeme('T_REQUIRED', false),
+        69 => new \Phplrt\Parser\Grammar\Concatenation([74, 75, 76]),
+        70 => new \Phplrt\Parser\Grammar\Lexeme('T_DOT', true),
+        71 => new \Phplrt\Parser\Grammar\Lexeme('T_DOT', true),
+        72 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        73 => new \Phplrt\Parser\Grammar\Concatenation([71, 72]),
+        74 => new \Phplrt\Parser\Grammar\Optional(70),
+        75 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        76 => new \Phplrt\Parser\Grammar\Repetition(73, 0, INF),
+        77 => new \Phplrt\Parser\Grammar\Lexeme('T_COMMA', false),
+        78 => new \Phplrt\Parser\Grammar\Concatenation([77, 'FieldOption']),
+        79 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACK', false),
+        80 => new \Phplrt\Parser\Grammar\Repetition(78, 0, INF),
+        81 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACK', false),
+        82 => new \Phplrt\Parser\Grammar\Alternation([33, 84, 85, 86]),
+        83 => new \Phplrt\Parser\Grammar\Lexeme('T_EQUALS', false),
+        84 => new \Phplrt\Parser\Grammar\Concatenation([92, 93, 94]),
         85 => new \Phplrt\Parser\Grammar\Lexeme('T_STRING_LITERAL', true),
         86 => new \Phplrt\Parser\Grammar\Lexeme('T_BOOL_LITERAL', true),
-        87 => new \Phplrt\Parser\Grammar\Alternation(['OptionDecl', 'OneofField']),
-        88 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
-        89 => new \Phplrt\Parser\Grammar\Lexeme('T_ONEOF', false),
-        90 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        91 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
-        92 => new \Phplrt\Parser\Grammar\Repetition(87, 0, INF),
-        93 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
-        94 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        95 => new \Phplrt\Parser\Grammar\Lexeme('T_EQUALS', false),
-        96 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
-        97 => new \Phplrt\Parser\Grammar\Optional(42),
-        98 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
-        99 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
-        100 => new \Phplrt\Parser\Grammar\Lexeme('T_MAP', false),
-        101 => new \Phplrt\Parser\Grammar\Lexeme('T_LT', false),
-        102 => new \Phplrt\Parser\Grammar\Lexeme('T_COMMA', false),
-        103 => new \Phplrt\Parser\Grammar\Lexeme('T_GT', false),
-        104 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        105 => new \Phplrt\Parser\Grammar\Lexeme('T_EQUALS', false),
-        106 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
-        107 => new \Phplrt\Parser\Grammar\Optional(42),
-        108 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
-        109 => new \Phplrt\Parser\Grammar\Concatenation(['Range', 116]),
-        110 => new \Phplrt\Parser\Grammar\Concatenation([123, 124]),
-        111 => new \Phplrt\Parser\Grammar\Lexeme('T_RESERVED', false),
-        112 => new \Phplrt\Parser\Grammar\Alternation([109, 110]),
+        87 => new \Phplrt\Parser\Grammar\Concatenation([95, 96, 97]),
+        88 => new \Phplrt\Parser\Grammar\Lexeme('T_COMMA', false),
+        89 => new \Phplrt\Parser\Grammar\Concatenation([88, 87]),
+        90 => new \Phplrt\Parser\Grammar\Repetition(89, 0, INF),
+        91 => new \Phplrt\Parser\Grammar\Concatenation([87, 90]),
+        92 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
+        93 => new \Phplrt\Parser\Grammar\Optional(91),
+        94 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
+        95 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        96 => new \Phplrt\Parser\Grammar\Lexeme('T_COLON', false),
+        97 => new \Phplrt\Parser\Grammar\Alternation([33, 84]),
+        98 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
+        99 => new \Phplrt\Parser\Grammar\Lexeme('T_FLOAT_LITERAL', true),
+        100 => new \Phplrt\Parser\Grammar\Lexeme('T_STRING_LITERAL', true),
+        101 => new \Phplrt\Parser\Grammar\Lexeme('T_BOOL_LITERAL', true),
+        102 => new \Phplrt\Parser\Grammar\Alternation(['OptionDecl', 'OneofField']),
+        103 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
+        104 => new \Phplrt\Parser\Grammar\Lexeme('T_ONEOF', false),
+        105 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        106 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
+        107 => new \Phplrt\Parser\Grammar\Repetition(102, 0, INF),
+        108 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
+        109 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        110 => new \Phplrt\Parser\Grammar\Lexeme('T_EQUALS', false),
+        111 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
+        112 => new \Phplrt\Parser\Grammar\Optional(57),
         113 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
-        114 => new \Phplrt\Parser\Grammar\Lexeme('T_COMMA', false),
-        115 => new \Phplrt\Parser\Grammar\Concatenation([114, 'Range']),
-        116 => new \Phplrt\Parser\Grammar\Repetition(115, 0, INF),
-        117 => new \Phplrt\Parser\Grammar\Concatenation([183, 184]),
-        118 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
-        119 => new \Phplrt\Parser\Grammar\Optional(117),
-        120 => new \Phplrt\Parser\Grammar\Lexeme('T_COMMA', false),
-        121 => new \Phplrt\Parser\Grammar\Lexeme('T_STRING_LITERAL', true),
-        122 => new \Phplrt\Parser\Grammar\Concatenation([120, 121]),
-        123 => new \Phplrt\Parser\Grammar\Lexeme('T_STRING_LITERAL', true),
-        124 => new \Phplrt\Parser\Grammar\Repetition(122, 0, INF),
-        125 => new \Phplrt\Parser\Grammar\Alternation(['OptionDecl', 'EnumField', 'Reserved']),
-        126 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
-        127 => new \Phplrt\Parser\Grammar\Lexeme('T_ENUM', false),
-        128 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        129 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
-        130 => new \Phplrt\Parser\Grammar\Repetition(125, 0, INF),
-        131 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
-        132 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
-        133 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        134 => new \Phplrt\Parser\Grammar\Lexeme('T_EQUALS', false),
-        135 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
-        136 => new \Phplrt\Parser\Grammar\Optional(42),
-        137 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
-        138 => new \Phplrt\Parser\Grammar\Alternation(['OptionDecl', 'RpcDecl']),
-        139 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
-        140 => new \Phplrt\Parser\Grammar\Lexeme('T_SERVICE', false),
-        141 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        142 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
-        143 => new \Phplrt\Parser\Grammar\Repetition(138, 0, INF),
-        144 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
-        145 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
-        146 => new \Phplrt\Parser\Grammar\Repetition('OptionDecl', 0, INF),
-        147 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
-        148 => new \Phplrt\Parser\Grammar\Concatenation([145, 146, 147]),
-        149 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
-        150 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
-        151 => new \Phplrt\Parser\Grammar\Lexeme('T_RPC', false),
-        152 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        153 => new \Phplrt\Parser\Grammar\Lexeme('T_LPAREN', false),
-        154 => new \Phplrt\Parser\Grammar\Lexeme('T_RPAREN', false),
-        155 => new \Phplrt\Parser\Grammar\Lexeme('T_RETURNS', false),
-        156 => new \Phplrt\Parser\Grammar\Lexeme('T_LPAREN', false),
-        157 => new \Phplrt\Parser\Grammar\Lexeme('T_RPAREN', false),
-        158 => new \Phplrt\Parser\Grammar\Alternation([148, 149]),
-        159 => new \Phplrt\Parser\Grammar\Lexeme('T_STREAM', true),
-        160 => new \Phplrt\Parser\Grammar\Lexeme('T_DOT', false),
-        161 => new \Phplrt\Parser\Grammar\Lexeme('T_DOT', false),
-        162 => new \Phplrt\Parser\Grammar\Concatenation([161, 54]),
-        163 => new \Phplrt\Parser\Grammar\Optional(159),
-        164 => new \Phplrt\Parser\Grammar\Optional(160),
-        165 => new \Phplrt\Parser\Grammar\Repetition(162, 0, INF),
-        166 => new \Phplrt\Parser\Grammar\Lexeme('T_DOUBLE', false),
-        167 => new \Phplrt\Parser\Grammar\Lexeme('T_FLOAT', false),
-        168 => new \Phplrt\Parser\Grammar\Lexeme('T_INT32', false),
-        169 => new \Phplrt\Parser\Grammar\Lexeme('T_INT64', false),
-        170 => new \Phplrt\Parser\Grammar\Lexeme('T_UINT32', false),
-        171 => new \Phplrt\Parser\Grammar\Lexeme('T_UINT64', false),
-        172 => new \Phplrt\Parser\Grammar\Lexeme('T_SINT32', false),
-        173 => new \Phplrt\Parser\Grammar\Lexeme('T_SINT64', false),
-        174 => new \Phplrt\Parser\Grammar\Lexeme('T_FIXED32', false),
-        175 => new \Phplrt\Parser\Grammar\Lexeme('T_FIXED64', false),
-        176 => new \Phplrt\Parser\Grammar\Lexeme('T_SFIXED32', false),
-        177 => new \Phplrt\Parser\Grammar\Lexeme('T_SFIXED64', false),
-        178 => new \Phplrt\Parser\Grammar\Lexeme('T_BOOL', false),
-        179 => new \Phplrt\Parser\Grammar\Lexeme('T_STRING', false),
-        180 => new \Phplrt\Parser\Grammar\Lexeme('T_BYTES', false),
-        181 => new \Phplrt\Parser\Grammar\Lexeme('T_MAX', true),
-        182 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
-        183 => new \Phplrt\Parser\Grammar\Lexeme('T_TO', false),
-        184 => new \Phplrt\Parser\Grammar\Alternation([181, 182]),
-        185 => new \Phplrt\Parser\Grammar\Lexeme('T_DOT', true),
-        186 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        187 => new \Phplrt\Parser\Grammar\Concatenation([185, 186]),
-        188 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
-        189 => new \Phplrt\Parser\Grammar\Repetition(187, 0, INF),
-        'BuiltInType' => new \Phplrt\Parser\Grammar\Alternation([166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180]),
+        114 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
+        115 => new \Phplrt\Parser\Grammar\Lexeme('T_MAP', false),
+        116 => new \Phplrt\Parser\Grammar\Lexeme('T_LT', false),
+        117 => new \Phplrt\Parser\Grammar\Lexeme('T_COMMA', false),
+        118 => new \Phplrt\Parser\Grammar\Lexeme('T_GT', false),
+        119 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        120 => new \Phplrt\Parser\Grammar\Lexeme('T_EQUALS', false),
+        121 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
+        122 => new \Phplrt\Parser\Grammar\Optional(57),
+        123 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
+        124 => new \Phplrt\Parser\Grammar\Concatenation(['Range', 131]),
+        125 => new \Phplrt\Parser\Grammar\Concatenation([138, 139]),
+        126 => new \Phplrt\Parser\Grammar\Lexeme('T_RESERVED', false),
+        127 => new \Phplrt\Parser\Grammar\Alternation([124, 125]),
+        128 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
+        129 => new \Phplrt\Parser\Grammar\Lexeme('T_COMMA', false),
+        130 => new \Phplrt\Parser\Grammar\Concatenation([129, 'Range']),
+        131 => new \Phplrt\Parser\Grammar\Repetition(130, 0, INF),
+        132 => new \Phplrt\Parser\Grammar\Concatenation([198, 199]),
+        133 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
+        134 => new \Phplrt\Parser\Grammar\Optional(132),
+        135 => new \Phplrt\Parser\Grammar\Lexeme('T_COMMA', false),
+        136 => new \Phplrt\Parser\Grammar\Lexeme('T_STRING_LITERAL', true),
+        137 => new \Phplrt\Parser\Grammar\Concatenation([135, 136]),
+        138 => new \Phplrt\Parser\Grammar\Lexeme('T_STRING_LITERAL', true),
+        139 => new \Phplrt\Parser\Grammar\Repetition(137, 0, INF),
+        140 => new \Phplrt\Parser\Grammar\Alternation(['OptionDecl', 'EnumField', 'Reserved']),
+        141 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
+        142 => new \Phplrt\Parser\Grammar\Lexeme('T_ENUM', false),
+        143 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        144 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
+        145 => new \Phplrt\Parser\Grammar\Repetition(140, 0, INF),
+        146 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
+        147 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
+        148 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        149 => new \Phplrt\Parser\Grammar\Lexeme('T_EQUALS', false),
+        150 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
+        151 => new \Phplrt\Parser\Grammar\Optional(57),
+        152 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
+        153 => new \Phplrt\Parser\Grammar\Alternation(['OptionDecl', 'RpcDecl']),
+        154 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
+        155 => new \Phplrt\Parser\Grammar\Lexeme('T_SERVICE', false),
+        156 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        157 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
+        158 => new \Phplrt\Parser\Grammar\Repetition(153, 0, INF),
+        159 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
+        160 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),
+        161 => new \Phplrt\Parser\Grammar\Repetition('OptionDecl', 0, INF),
+        162 => new \Phplrt\Parser\Grammar\Lexeme('T_RBRACE', false),
+        163 => new \Phplrt\Parser\Grammar\Concatenation([160, 161, 162]),
+        164 => new \Phplrt\Parser\Grammar\Lexeme('T_SEMICOLON', false),
+        165 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
+        166 => new \Phplrt\Parser\Grammar\Lexeme('T_RPC', false),
+        167 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        168 => new \Phplrt\Parser\Grammar\Lexeme('T_LPAREN', false),
+        169 => new \Phplrt\Parser\Grammar\Lexeme('T_RPAREN', false),
+        170 => new \Phplrt\Parser\Grammar\Lexeme('T_RETURNS', false),
+        171 => new \Phplrt\Parser\Grammar\Lexeme('T_LPAREN', false),
+        172 => new \Phplrt\Parser\Grammar\Lexeme('T_RPAREN', false),
+        173 => new \Phplrt\Parser\Grammar\Alternation([163, 164]),
+        174 => new \Phplrt\Parser\Grammar\Lexeme('T_STREAM', true),
+        175 => new \Phplrt\Parser\Grammar\Lexeme('T_DOT', false),
+        176 => new \Phplrt\Parser\Grammar\Lexeme('T_DOT', false),
+        177 => new \Phplrt\Parser\Grammar\Concatenation([176, 69]),
+        178 => new \Phplrt\Parser\Grammar\Optional(174),
+        179 => new \Phplrt\Parser\Grammar\Optional(175),
+        180 => new \Phplrt\Parser\Grammar\Repetition(177, 0, INF),
+        181 => new \Phplrt\Parser\Grammar\Lexeme('T_DOUBLE', false),
+        182 => new \Phplrt\Parser\Grammar\Lexeme('T_FLOAT', false),
+        183 => new \Phplrt\Parser\Grammar\Lexeme('T_INT32', false),
+        184 => new \Phplrt\Parser\Grammar\Lexeme('T_INT64', false),
+        185 => new \Phplrt\Parser\Grammar\Lexeme('T_UINT32', false),
+        186 => new \Phplrt\Parser\Grammar\Lexeme('T_UINT64', false),
+        187 => new \Phplrt\Parser\Grammar\Lexeme('T_SINT32', false),
+        188 => new \Phplrt\Parser\Grammar\Lexeme('T_SINT64', false),
+        189 => new \Phplrt\Parser\Grammar\Lexeme('T_FIXED32', false),
+        190 => new \Phplrt\Parser\Grammar\Lexeme('T_FIXED64', false),
+        191 => new \Phplrt\Parser\Grammar\Lexeme('T_SFIXED32', false),
+        192 => new \Phplrt\Parser\Grammar\Lexeme('T_SFIXED64', false),
+        193 => new \Phplrt\Parser\Grammar\Lexeme('T_BOOL', false),
+        194 => new \Phplrt\Parser\Grammar\Lexeme('T_STRING', false),
+        195 => new \Phplrt\Parser\Grammar\Lexeme('T_BYTES', false),
+        196 => new \Phplrt\Parser\Grammar\Lexeme('T_MAX', true),
+        197 => new \Phplrt\Parser\Grammar\Lexeme('T_INT_LITERAL', true),
+        198 => new \Phplrt\Parser\Grammar\Lexeme('T_TO', false),
+        199 => new \Phplrt\Parser\Grammar\Alternation([196, 197]),
+        200 => new \Phplrt\Parser\Grammar\Lexeme('T_DOT', true),
+        201 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        202 => new \Phplrt\Parser\Grammar\Concatenation([200, 201]),
+        203 => new \Phplrt\Parser\Grammar\Lexeme('T_IDENTIFIER', true),
+        204 => new \Phplrt\Parser\Grammar\Repetition(202, 0, INF),
+        'BuiltInType' => new \Phplrt\Parser\Grammar\Alternation([181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195]),
         'Comment' => new \Phplrt\Parser\Grammar\Lexeme('T_COMMENT', true),
-        'EnumDef' => new \Phplrt\Parser\Grammar\Concatenation([126, 127, 128, 129, 130, 131]),
-        'EnumField' => new \Phplrt\Parser\Grammar\Concatenation([132, 133, 134, 135, 136, 137]),
-        'FieldDecl' => new \Phplrt\Parser\Grammar\Concatenation([43, 44, 41, 45, 46, 47, 48, 49, 50]),
-        'FieldOption' => new \Phplrt\Parser\Grammar\Concatenation([20, 68, 67]),
+        'EnumDef' => new \Phplrt\Parser\Grammar\Concatenation([141, 142, 143, 144, 145, 146]),
+        'EnumField' => new \Phplrt\Parser\Grammar\Concatenation([147, 148, 149, 150, 151, 152]),
+        'FieldDecl' => new \Phplrt\Parser\Grammar\Concatenation([58, 59, 56, 60, 61, 62, 63, 64, 65]),
+        'FieldOption' => new \Phplrt\Parser\Grammar\Concatenation([20, 83, 82]),
         'ImportDecl' => new \Phplrt\Parser\Grammar\Concatenation([9, 10, 11, 12, 13]),
-        'MapFieldDecl' => new \Phplrt\Parser\Grammar\Concatenation([99, 100, 101, 41, 102, 41, 103, 104, 105, 106, 107, 108]),
-        'MessageDef' => new \Phplrt\Parser\Grammar\Concatenation([34, 35, 36, 37, 38, 39]),
-        'MessageType' => new \Phplrt\Parser\Grammar\Concatenation([163, 164, 54, 165]),
-        'OneofDecl' => new \Phplrt\Parser\Grammar\Concatenation([88, 89, 90, 91, 92, 93]),
-        'OneofField' => new \Phplrt\Parser\Grammar\Concatenation([41, 94, 95, 96, 97, 98]),
+        'MapFieldDecl' => new \Phplrt\Parser\Grammar\Concatenation([114, 115, 116, 56, 117, 56, 118, 119, 120, 121, 122, 123]),
+        'MessageDef' => new \Phplrt\Parser\Grammar\Concatenation([49, 50, 51, 52, 53, 54]),
+        'MessageType' => new \Phplrt\Parser\Grammar\Concatenation([178, 179, 69, 180]),
+        'OneofDecl' => new \Phplrt\Parser\Grammar\Concatenation([103, 104, 105, 106, 107, 108]),
+        'OneofField' => new \Phplrt\Parser\Grammar\Concatenation([56, 109, 110, 111, 112, 113]),
         'OptionDecl' => new \Phplrt\Parser\Grammar\Concatenation([22, 23, 20, 24, 21, 25]),
         'PackageDecl' => new \Phplrt\Parser\Grammar\Concatenation([17, 18, 16, 19]),
         'Proto' => new \Phplrt\Parser\Grammar\Concatenation(['SyntaxDecl', 2]),
-        'Range' => new \Phplrt\Parser\Grammar\Concatenation([118, 119]),
-        'Reserved' => new \Phplrt\Parser\Grammar\Concatenation([111, 112, 113]),
-        'RpcDecl' => new \Phplrt\Parser\Grammar\Concatenation([150, 151, 152, 153, 'MessageType', 154, 155, 156, 'MessageType', 157, 158]),
-        'ServiceDef' => new \Phplrt\Parser\Grammar\Concatenation([139, 140, 141, 142, 143, 144]),
+        'Range' => new \Phplrt\Parser\Grammar\Concatenation([133, 134]),
+        'Reserved' => new \Phplrt\Parser\Grammar\Concatenation([126, 127, 128]),
+        'RpcDecl' => new \Phplrt\Parser\Grammar\Concatenation([165, 166, 167, 168, 'MessageType', 169, 170, 171, 'MessageType', 172, 173]),
+        'ServiceDef' => new \Phplrt\Parser\Grammar\Concatenation([154, 155, 156, 157, 158, 159]),
         'SyntaxDecl' => new \Phplrt\Parser\Grammar\Concatenation([3, 4, 5, 6, 7]),
     ],
     'reducers' => [
@@ -308,7 +323,7 @@ return [
             $parts = \array_filter(array_map(fn($child) => $child->getValue(), $children), fn($part) => $part !== '.');
             return implode('.', $parts);
         },
-        21 => static function (\Phplrt\Parser\Context $ctx, $children) {
+        33 => static function (\Phplrt\Parser\Context $ctx, $children) {
             $el = \is_array($children) ? $children[0] : $children;
 
             if ($el instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
@@ -326,7 +341,26 @@ return [
 
             return $el;
         },
-        40 => static function (\Phplrt\Parser\Context $ctx, $children) {
+        34 => static function (\Phplrt\Parser\Context $ctx, $children) {
+            $result = [];
+            foreach ($children as $child) {
+                if ($child instanceof \Butschster\ProtoParser\Ast\OptionNode) {
+                    $result[$child->name] = $child;
+                }
+            }
+            return $result;
+        },
+        35 => static function (\Phplrt\Parser\Context $ctx, $children) {
+            $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+            $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
+            return new \Butschster\ProtoParser\Ast\OptionNode(
+                name: $children[0],
+                value: $children[1],
+                comments: array_values($comments),
+            );
+        },
+        55 => static function (\Phplrt\Parser\Context $ctx, $children) {
             // The "$token" variable is an auto-generated
             $token = $ctx->lastProcessedToken;
 
@@ -337,12 +371,11 @@ return [
                 default => null
             };
         },
-        41 => static function (\Phplrt\Parser\Context $ctx, $children) {
+        56 => static function (\Phplrt\Parser\Context $ctx, $children) {
             if ($children instanceof \Butschster\ProtoParser\Ast\BuiltInType) {
                 return new \Butschster\ProtoParser\Ast\FieldType($children->value);
             }
 
-            dump($children);
             $isDotFirst = $children[0] instanceof \Phplrt\Contracts\Lexer\TokenInterface && $children[0]->getValue() === '.';
             $parts = \array_filter(array_map(fn($child) => $child->getValue(), $children), fn($part) => $part !== '.');
 
@@ -353,39 +386,39 @@ return [
 
             return new \Butschster\ProtoParser\Ast\FieldType($type);
         },
-        42 => static function (\Phplrt\Parser\Context $ctx, $children) {
-            $options = [];
-            foreach ($children as $option) {
-                if ($option instanceof \Butschster\ProtoParser\Ast\OptionDeclNode) {
-                    $options[$option->name] = $option->value;
-                }
-            }
-            return ['FieldOptions' => $options];
-        },
-        69 => static function (\Phplrt\Parser\Context $ctx, $children) {
+        57 => static function (\Phplrt\Parser\Context $ctx, $children) {
             $result = [];
             foreach ($children as $child) {
-                if ($child instanceof \Butschster\ProtoParser\Ast\OptionDeclNode) {
-                    $result[$child->name] = $child->value;
+                if ($child instanceof \Butschster\ProtoParser\Ast\OptionNode) {
+                    $result[$child->name] = $child;
+                }
+            }
+            return ['FieldOptions' => $result];
+        },
+        84 => static function (\Phplrt\Parser\Context $ctx, $children) {
+            $result = [];
+            foreach ($children as $child) {
+                if ($child instanceof \Butschster\ProtoParser\Ast\OptionNode) {
+                    $result[$child->name] = $child;
                 }
             }
             return $result;
         },
-        72 => static function (\Phplrt\Parser\Context $ctx, $children) {
-            return new \Butschster\ProtoParser\Ast\OptionDeclNode(
+        87 => static function (\Phplrt\Parser\Context $ctx, $children) {
+            return new \Butschster\ProtoParser\Ast\OptionNode(
                 name: $children[0],
                 value: $children[1]
             );
         },
-        109 => static function (\Phplrt\Parser\Context $ctx, $children) {
+        124 => static function (\Phplrt\Parser\Context $ctx, $children) {
             return $children;
         },
-        110 => static function (\Phplrt\Parser\Context $ctx, $children) {
+        125 => static function (\Phplrt\Parser\Context $ctx, $children) {
             return array_map(function($child) {
                 return trim($child->getValue(), '"\'');
             }, $children);
         },
-        117 => static function (\Phplrt\Parser\Context $ctx, $children) {
+        132 => static function (\Phplrt\Parser\Context $ctx, $children) {
             return $children[0] instanceof \Butschster\ProtoParser\Ast\ReservedNumber
                 ? null
                 : $children[0];
@@ -462,12 +495,9 @@ return [
             );
         },
         'FieldOption' => static function (\Phplrt\Parser\Context $ctx, $children) {
-            $name = $children[0];
-            $value = $children[1];
-
-            return new \Butschster\ProtoParser\Ast\OptionDeclNode(
-                name: $name,
-                value: $value
+            return new \Butschster\ProtoParser\Ast\OptionNode(
+                name: $children[0],
+                value: $children[1]
             );
         },
         'ImportDecl' => static function (\Phplrt\Parser\Context $ctx, $children) {
@@ -571,12 +601,15 @@ return [
             $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
 
             $name = $children[0];
-            $value = $children[1];
+            $values = \array_map(
+                fn(mixed $child) => $child instanceof \Butschster\ProtoParser\Ast\OptionNode ? $child : new \Butschster\ProtoParser\Ast\OptionNode($name, $child),
+                \array_slice($children, 1)
+            );
 
             return new \Butschster\ProtoParser\Ast\OptionDeclNode(
                 name: $name,
-                value: $value,
                 comments: array_values($comments),
+                options: \array_values($values),
             );
         },
         'PackageDecl' => static function (\Phplrt\Parser\Context $ctx, $children) {
@@ -642,7 +675,7 @@ return [
                 name: $name,
                 inputType: $inputType,
                 outputType: $outputType,
-                options: $options,
+                options: \array_values($options),
                 comments: array_values($comments),
             );
         },

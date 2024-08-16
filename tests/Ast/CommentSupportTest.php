@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Butschster\Tests\Ast;
 
 use Butschster\ProtoParser\Ast\CommentNode;
+use Butschster\ProtoParser\Ast\OptionNode;
 
 final class CommentSupportTest extends TestCase
 {
@@ -174,11 +175,10 @@ final class CommentSupportTest extends TestCase
         $option = $method->options[0];
         $this->assertSame('google.api.http', $option->name);
         $this->assertCount(1, $option->comments);
-        $this->assertSame('Option comment', $option->comments[0]->text);
+        $this->assertEquals(new CommentNode('Option comment'), $option->comments[0]);
 
-        $this->assertIsArray($option->value);
-        $this->assertArrayHasKey('get', $option->value);
-        $this->assertCount(1, $option->value['comments']);
-        $this->assertSame('HTTP option comment', $option->value['comments'][0]->text);
+        $this->assertEquals(new OptionNode('get', '/v1/say-hello', [
+            new CommentNode('HTTP option comment')
+        ]), $option->options[0]);
     }
 }

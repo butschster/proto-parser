@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Butschster\Tests\Ast;
 
+use Butschster\ProtoParser\Ast\OptionNode;
 use Butschster\ProtoParser\Ast\RpcMessageType;
 use Butschster\ProtoParser\Ast\ServiceDefNode;
 use Butschster\ProtoParser\Ast\RpcDeclNode;
@@ -112,16 +113,14 @@ final class ServiceDefNodeTest extends TestCase
         $method = $service->methods[0];
         $this->assertInstanceOf(RpcDeclNode::class, $method);
         $this->assertSame('GetUser', $method->name);
-        $this->assertSame('GetUserRequest', $method->inputType);
-        $this->assertSame('User', $method->outputType);
+        $this->assertEquals(new RpcMessageType('GetUserRequest'), $method->inputType);
+        $this->assertEquals(new RpcMessageType('User'), $method->outputType);
         $this->assertCount(1, $method->options);
 
         $option = $method->options[0];
-        $this->assertInstanceOf(OptionDeclNode::class, $option);
         $this->assertSame('google.api.http', $option->name);
-        $this->assertIsArray($option->value);
-        $this->assertArrayHasKey('get', $option->value);
-        $this->assertSame('/v1/users/{user_id}', $option->value['get']);
+        $this->assertCount(1, $option->options);
+        $this->assertEquals(new OptionNode('get', '/v1/users/{user_id}'), $option->options[0]);
     }
 
     public function testServiceWithStreamingMethods(): void

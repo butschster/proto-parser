@@ -34,6 +34,28 @@ PROTO,
         $this->assertEmpty($field->options);
     }
 
+    public function testSimpleOptionalFieldDeclaration(): void
+    {
+        $proto = $this->parseProto(
+            <<<PROTO
+syntax = "proto3";
+package example;
+message Person {
+    optional string name = 1;
+}
+PROTO,
+        );
+
+        $field = $this->getFirstFieldFromFirstMessage($proto);
+
+        $this->assertInstanceOf(FieldDeclNode::class, $field);
+        $this->assertEquals(new FieldType('string'), $field->type);
+        $this->assertSame('name', $field->name);
+        $this->assertSame(1, $field->number);
+        $this->assertSame(FieldModifier::Optional, $field->modifier);
+        $this->assertEmpty($field->options);
+    }
+
     public function testFieldDeclarationWithModifier(): void
     {
         $proto = $this->parseProto(
@@ -142,7 +164,7 @@ PROTO,
         $this->assertEquals(new FieldType('.my.CustomType'), $field->type);
         $this->assertSame('custom_field', $field->name);
         $this->assertSame(6, $field->number);
-        $this->assertSame('optional', $field->modifier);
+        $this->assertSame(FieldModifier::Optional, $field->modifier);
         $this->assertCount(2, $field->options);
         $this->assertSame('test', $field->options['default']);
         $this->assertSame('customField', $field->options['json_name']);

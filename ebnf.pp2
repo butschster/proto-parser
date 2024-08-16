@@ -2,7 +2,6 @@
 %token T_SYNTAX           syntax
 %token T_PACKAGE          package
 %token T_IMPORT           import
-%token T_OPTION           option
 %token T_MESSAGE          message
 %token T_ENUM             enum
 %token T_SERVICE          service
@@ -11,9 +10,9 @@
 %token T_STREAM           stream
 %token T_REPEATED         repeated
 %token T_OPTIONAL         optional
+%token T_OPTION           option
 %token T_REQUIRED         required
 %token T_RESERVED         reserved
-%token T_EXTENSIONS       extensions
 %token T_MAX              max
 %token T_WEAK             weak
 %token T_PUBLIC           public
@@ -222,8 +221,7 @@ TopLevelDef
             OptionDecl() |
             OneofDecl() |
             MapFieldDecl() |
-            Reserved() |
-            Extensions()
+            Reserved()
         )*
     ::T_RBRACE::
     ;
@@ -270,11 +268,17 @@ Type -> {
         return new \Butschster\ProtoParser\Ast\FieldType($children->value);
     }
 
+    $isDotFirst = $children[0] instanceof \Phplrt\Contracts\Lexer\TokenInterface && $children[0]->getValue() === '.';
     $parts = \array_filter(array_map(fn($child) => $child->getValue(), $children), fn($part) => $part !== '.');
 
-    return new \Butschster\ProtoParser\Ast\FieldType(implode('.', $parts));
+    $type = implode('.', $parts);
+    if ($isDotFirst) {
+        $type = '.' . $type;
+    }
+
+    return new \Butschster\ProtoParser\Ast\FieldType($type);
 }
-    : BuiltInType() | ((::T_DOT::)? TypeName())
+    : BuiltInType() | TypeName()
     ;
 
 TypeName
@@ -435,10 +439,6 @@ FieldNames -> {
     : <T_STRING_LITERAL> (::T_COMMA:: <T_STRING_LITERAL>)*
     ;
 
-#Extensions -> Butschster\ProtoParser\Ast\ExtensionsNode
-    : ::T_EXTENSIONS:: Ranges() ::T_SEMICOLON::
-    ;
-
 #EnumDef -> {
     $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
     $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
@@ -546,16 +546,13 @@ FieldNames -> {
     : <T_STREAM>? (::T_DOT::)? TypeName() (::T_DOT:: TypeName())*
     ;
 
-FullIdent
-    : <T_IDENTIFIER> (<T_DOT> <T_IDENTIFIER>)*
-    ;
 
 #BuiltInType -> {
-    return \Butschster\ProtoParser\Ast\BuiltInType::tryFrom($children->getValue());
+    return \Butschster\ProtoParser\Ast\BuiltInType::tryFrom($token->getValue());
 }
-    : <T_DOUBLE> | <T_FLOAT> | <T_INT32> | <T_INT64> | <T_UINT32> | <T_UINT64>
-    | <T_SINT32> | <T_SINT64> | <T_FIXED32> | <T_FIXED64> | <T_SFIXED32> | <T_SFIXED64>
-    | <T_BOOL> | <T_STRING> | <T_BYTES>
+    : ::T_DOUBLE:: | ::T_FLOAT:: | ::T_INT32:: | ::T_INT64:: | ::T_UINT32:: | ::T_UINT64::
+    | ::T_SINT32:: | ::T_SINT64:: | ::T_FIXED32:: | ::T_FIXED64:: | ::T_SFIXED32:: | ::T_SFIXED64::
+    | ::T_BOOL:: | ::T_STRING:: | ::T_BYTES::
     ;
 
 #Comment -> {
@@ -573,4 +570,8 @@ RangeTo -> {
         : $children[0];
 }
     : ::T_TO:: (<T_MAX> | <T_INT_LITERAL>)
+    ;
+
+FullIdent
+    : <T_IDENTIFIER> (<T_DOT> <T_IDENTIFIER>)*
     ;

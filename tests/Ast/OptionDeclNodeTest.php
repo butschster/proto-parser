@@ -8,6 +8,24 @@ use Butschster\ProtoParser\Ast\OptionDeclNode;
 
 final class OptionDeclNodeTest extends TestCase
 {
+    public function testServiceWithOptions(): void
+    {
+        $node = $this->parser->parse(
+            <<<'PROTO'
+            syntax = "proto3";
+            package example;
+
+            service UserService {
+                rpc GetUser (GetUserRequest) returns (User) {
+                    option (google.api.http) = {
+                        get: "/v1/users/{user_id}"
+                    };
+                }
+            }
+            PROTO,
+        );
+    }
+
     public function testParseOptionWithParentheses(): void
     {
         $node = $this->parser->parse(

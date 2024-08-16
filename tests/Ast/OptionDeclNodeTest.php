@@ -25,7 +25,10 @@ syntax = "proto3";
 package example;
 message User {
     string id = 1;
-    string name = 2 [(validate.rules).string = {min_len: 3, max_len: 50}];
+    string name = 2 [(validate.rules).string = {
+        min_len: 3,
+        max_len: 50
+    }];
     string email = 3 [(validate.rules).string.email = true];
 }
 PROTO,
@@ -53,10 +56,21 @@ PROTO,
         $this->assertEquals(new FieldType('string'), $nameField->type);
         $this->assertSame(2, $nameField->number);
         $this->assertCount(1, $nameField->options);
-        $this->assertArrayHasKey('FieldOptions', $nameField->options);
-        $this->assertArrayHasKey('(validate.rules).string', $nameField->options['FieldOptions']);
-        $this->assertEquals(['min_len' => 3, 'max_len' => 50],
-            $nameField->options['FieldOptions']['(validate.rules).string']);
+
+        $this->assertEquals(
+            new OptionNode(
+                'validate.rules.string',
+                new OptionDeclNode(
+                    null,
+                    [],
+                    [
+                        'min_len' => new OptionNode('min_len', 3),
+                        'max_len' => new OptionNode('max_len', 50),
+                    ],
+                ),
+            ),
+            $nameField->options['validate.rules.string'],
+        );
 
         // Test email field
         $emailField = $message->fields[2];
@@ -65,9 +79,50 @@ PROTO,
         $this->assertEquals(new FieldType('string'), $emailField->type);
         $this->assertSame(3, $emailField->number);
         $this->assertCount(1, $emailField->options);
-        $this->assertArrayHasKey('FieldOptions', $emailField->options);
-        $this->assertArrayHasKey('(validate.rules).string.email', $emailField->options['FieldOptions']);
-        $this->assertTrue($emailField->options['FieldOptions']['(validate.rules).string.email']);
+        $this->assertEquals(
+            new OptionNode(
+                'validate.rules.string.email',
+                true,
+            ),
+            $emailField->options['validate.rules.string.email'],
+        );
+    }
+
+    public function testParseServiceWithComplexOption1(): void
+    {
+        $node = $this->parser->parse(
+            <<<'PROTO'
+            syntax = "proto3";
+            package example;
+
+            service UserService {
+                option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
+                    description: "User management service"
+                    external_docs: {
+                        url: "https://example.com/docs"
+                        description: "User service documentation"
+                    }
+                };
+
+                rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.Empty) {
+                    option (google.api.http) = {
+                        delete: "/v1/users/{user_id}"
+                    };
+                    option deadline = 10.0;
+                }
+            }
+            PROTO,
+        );
+
+        $service = $node->topLevelDefs[0];
+        $rpc = $service->methods[0];
+        $this->assertInstanceOf(RpcDeclNode::class, $rpc);
+        $this->assertSame('DeleteUser', $rpc->name);
+
+        $option = $rpc->options[1];
+        $this->assertEquals('deadline', $option->options[0]->name);
+        $this->assertSame(10.0, $option->options[0]->value);
+        $this->assertCount(0, $option->options[0]->comments);
     }
 
     public function testParseServiceWithComplexOption(): void
@@ -169,11 +224,17 @@ PROTO,
 
         $this->assertInstanceOf(OptionDeclNode::class, $node->options[0]);
         $this->assertSame('google.api.default_host', $node->options[0]->name);
-        $this->assertEquals(new OptionNode('google.api.default_host', 'user.example.com'), $node->options[0]->options[0]);
+        $this->assertEquals(
+            new OptionNode('google.api.default_host', 'user.example.com'),
+            $node->options[0]->options[0],
+        );
 
         $this->assertInstanceOf(OptionDeclNode::class, $node->options[1]);
         $this->assertSame('google.api.oauth_scopes', $node->options[1]->name);
-        $this->assertEquals(new OptionNode('google.api.oauth_scopes', 'https://www.googleapis.com/auth/userinfo.email'), $node->options[1]->options[0]);
+        $this->assertEquals(
+            new OptionNode('google.api.oauth_scopes', 'https://www.googleapis.com/auth/userinfo.email'),
+            $node->options[1]->options[0],
+        );
 
         $this->assertInstanceOf(OptionDeclNode::class, $node->options[2]);
         $this->assertSame('java_multiple_files', $node->options[2]->name);

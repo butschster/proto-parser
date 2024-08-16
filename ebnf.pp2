@@ -1,42 +1,41 @@
 // Lexer rules
-%token T_SYNTAX           syntax
-%token T_PACKAGE          package
-%token T_IMPORT           import
-%token T_MESSAGE          message
-%token T_ENUM             enum
-%token T_SERVICE          service
-%token T_RPC              rpc
-%token T_RETURNS          returns
-%token T_STREAM           stream
-%token T_REPEATED         repeated
-%token T_OPTIONAL         optional
-%token T_OPTION           option
-%token T_REQUIRED         required
-%token T_RESERVED         reserved
-%token T_MAX              max
-%token T_WEAK             weak
-%token T_PUBLIC           public
-%token T_MAP              map
-%token T_ONEOF            oneof
+// !!!Position of the token is important. Don't change the order of the tokens!!!
+%token T_SYNTAX           (?<=^|\s)syntax\b
+%token T_PACKAGE          (?<=^|\s)package\b
+%token T_IMPORT           (?<=^|\s)import\b
+%token T_MESSAGE          (?<=^|\s)message\b
+%token T_ENUM             (?<=^|\s)enum\b
+%token T_SERVICE          (?<=^|\s)service\b
+%token T_RPC              (?<=^|\s)rpc\b
+%token T_RETURNS          (?<=^|\s)returns\b
+%token T_STREAM           (?<=^|\s|\()stream\b
+%token T_REPEATED         (?<=^|\s)repeated\b
+%token T_OPTIONAL         (?<=^|\s)optional\b
+%token T_OPTION           (?<=^|\s)option\b
+%token T_REQUIRED         (?<=^|\s)required\b
+%token T_RESERVED         (?<=^|\s)reserved\b
+%token T_WEAK             (?<=^|\s)weak\b
+%token T_PUBLIC           (?<=^|\s)public\b
+%token T_MAP              (?<=^|\s)map\b
+%token T_ONEOF            (?<=^|\s)oneof\b
 
-%token T_DOUBLE           double
-%token T_FLOAT            float
-%token T_INT32            int32
-%token T_INT64            int64
-%token T_UINT32           uint32
-%token T_UINT64           uint64
-%token T_SINT32           sint32
-%token T_SINT64           sint64
-%token T_FIXED32          fixed32
-%token T_FIXED64          fixed64
-%token T_SFIXED32         sfixed32
-%token T_SFIXED64         sfixed64
-%token T_BOOL             bool
-%token T_STRING           string
-%token T_BYTES            bytes
+%token T_DOUBLE           (?<=^|\s)double\b
+%token T_FLOAT            (?<=^|\s)float\b
+%token T_INT32            (?<=^|\s)int32\b
+%token T_INT64            (?<=^|\s)int64\b
+%token T_UINT32           (?<=^|\s)uint32\b
+%token T_UINT64           (?<=^|\s)uint64\b
+%token T_SINT32           (?<=^|\s)sint32\b
+%token T_SINT64           (?<=^|\s)sint64\b
+%token T_FIXED32          (?<=^|\s)fixed32\b
+%token T_FIXED64          (?<=^|\s)fixed64\b
+%token T_SFIXED32         (?<=^|\s)sfixed32\b
+%token T_SFIXED64         (?<=^|\s)sfixed64\b
+%token T_BOOL             (?<=^|\s)bool\b
+%token T_BYTES            (?<=^|\s)bytes\b
 
-%token T_INT_LITERAL      -?[0-9]+
 %token T_FLOAT_LITERAL    -?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?
+%token T_INT_LITERAL      -?[0-9]+
 %token T_STRING_LITERAL   "([^"\\]*(?:\\.[^"\\]*)*)"
 %token T_BOOL_LITERAL     true|false
 %token T_COMMENT          //.*?$|/\*(.|\n)*?\*/
@@ -56,7 +55,10 @@
 %token T_COMMA            ,
 %token T_DOT              \.
 
-%token T_TO               to
+%token T_TO               (?<=^|\s)to\b
+%token T_STRING           (?<=^|\s)string\b
+%token T_MAX              (?<=^|\s)max\b
+
 %token T_IDENTIFIER       [a-zA-Z_][a-zA-Z0-9_]*
 
 %skip T_WHITESPACE        \s+
@@ -182,6 +184,7 @@ OptionName -> {
 OptionValue
     : Constant()
     | MessageLiteralWithBraces()
+    | <T_FLOAT_LITERAL>
     ;
 
 MessageLiteralWithBraces -> {
@@ -331,6 +334,8 @@ FieldOptions -> {
     ;
 
 #FieldOption -> {
+    $name = $children[0];
+
     return new \Butschster\ProtoParser\Ast\OptionNode(
         name: $children[0],
         value: $children[1]
@@ -353,14 +358,18 @@ ComplexOptionValue -> {
             $result[$child->name] = $child;
         }
     }
-    return $result;
+
+    return new \Butschster\ProtoParser\Ast\OptionDeclNode(
+        name: null,
+        options: $result
+    );
 }
     : ::T_LBRACE:: (ComplexOptionField() (::T_COMMA:: ComplexOptionField())*)? ::T_RBRACE::
     ;
 
 ComplexOptionField -> {
     return new \Butschster\ProtoParser\Ast\OptionNode(
-        name: $children[0],
+        name: $children[0] instanceof Phplrt\Lexer\Token\Token ? $children[0]->getValue() : $children[0],
         value: $children[1]
     );
 }
@@ -385,7 +394,7 @@ Constant -> {
 
     return $el;
 }
-    : <T_INT_LITERAL> | <T_FLOAT_LITERAL> | <T_STRING_LITERAL> | <T_BOOL_LITERAL> | FullIdent()
+    : <T_FLOAT_LITERAL> | <T_INT_LITERAL> | <T_STRING_LITERAL> | <T_BOOL_LITERAL> | FullIdent()
     ;
 
 #OneofDecl -> {

@@ -11,7 +11,7 @@ final readonly class MessageDefNode implements NodeInterface
     public function __construct(
         /** @var non-empty-string */
         public string $name,
-        /** @var FieldDeclNode[] */
+        /** @var FieldDeclNode[]|ReservedNode[] */
         public array $fields = [],
         /** @var MessageDefNode */
         public array $messages = [],

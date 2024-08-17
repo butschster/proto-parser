@@ -223,7 +223,7 @@ TopLevelDef
     $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
     $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
 
-    $name = $children[0]->getValue();
+    $name = $children[0];
     $fields = [];
     $enums = [];
     $messages = [];
@@ -233,6 +233,7 @@ TopLevelDef
         $child instanceof \Butschster\ProtoParser\Ast\FieldDeclNode
         || $child instanceof \Butschster\ProtoParser\Ast\MapFieldDeclNode
         || $child instanceof \Butschster\ProtoParser\Ast\OneofDeclNode
+        || $child instanceof \Butschster\ProtoParser\Ast\ReservedNode
         ) {
             $fields[] = $child;
         } elseif ($child instanceof \Butschster\ProtoParser\Ast\EnumDefNode) {
@@ -250,7 +251,7 @@ TopLevelDef
         comments: array_values($comments),
     );
 }
-    : Comment()* ::T_MESSAGE:: <T_IDENTIFIER> ::T_LBRACE::
+    : Comment()* ::T_MESSAGE:: AnyString() ::T_LBRACE::
         (
             FieldDecl() |
             EnumDef() |
@@ -446,11 +447,15 @@ Constant -> {
     ;
 
 #Reserved -> {
+    $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
+    $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
+
     return new \Butschster\ProtoParser\Ast\ReservedNode(
-        ranges: $children
+        ranges: $children,
+        comments: array_values($comments),
     );
 }
-    : ::T_RESERVED:: (Ranges() | FieldNames()) ::T_SEMICOLON::
+    : Comment()* ::T_RESERVED:: (Ranges() | FieldNames()) ::T_SEMICOLON::
     ;
 
 Ranges -> {

@@ -132,7 +132,7 @@ return [
         47 => new \Phplrt\Parser\Grammar\Alternation([33, 34]),
         48 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
         49 => new \Phplrt\Parser\Grammar\Alternation([206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224]),
-        50 => new \Phplrt\Parser\Grammar\Alternation(['FieldDecl', 'EnumDef', 'MessageDef', 'OptionDecl', 'OneofDecl', 'MapFieldDecl', 'Reserved']),
+        50 => new \Phplrt\Parser\Grammar\Alternation(['FieldDecl', 'EnumDef', 'MessageDef', 'OptionDecl', 'OneofDecl', 'MapFieldDecl', 'Reserved', 'Comment']),
         51 => new \Phplrt\Parser\Grammar\Repetition('Comment', 0, INF),
         52 => new \Phplrt\Parser\Grammar\Lexeme('T_MESSAGE', false),
         53 => new \Phplrt\Parser\Grammar\Lexeme('T_LBRACE', false),

@@ -259,7 +259,8 @@ TopLevelDef
             OptionDecl() |
             OneofDecl() |
             MapFieldDecl() |
-            Reserved()
+            Reserved() |
+            Comment()
         )*
     ::T_RBRACE::
     ;

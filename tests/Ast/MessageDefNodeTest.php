@@ -126,6 +126,7 @@ message Problem {
     reserved 1;
     string name = 2;
     reserved 3, 4;
+    // uint32 status = 7; // status of running
 }
 PROTO,
         );
@@ -133,6 +134,9 @@ PROTO,
         $message = $node->topLevelDefs[0];
         $this->assertSame('Problem', $message->name);
         $this->assertCount(3, $message->fields);
+
+        $this->assertCount(1, $message->comments);
+        $this->assertSame('uint32 status = 7; // status of running', $message->comments[0]->text);
 
         // Test first reserved field
         $this->assertInstanceOf(ReservedNode::class, $message->fields[0]);

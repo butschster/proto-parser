@@ -289,7 +289,7 @@ TopLevelDef
         comments: array_values($comments),
     );
 }
-    : Comment()* FieldModifier()? Type() AnyString() ::T_EQUALS:: <T_INT_LITERAL> FieldOptions()? ::T_SEMICOLON:: Comment()?
+    : Comment()* FieldModifier()? Type() AnyString() ::T_EQUALS:: <T_INT_LITERAL> FieldOptions()? ::T_SEMICOLON::
     ;
 
 FieldModifier  -> {

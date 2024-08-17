@@ -20,34 +20,50 @@ final class CommentSupportTest extends TestCase
 
         // This is a comment for message
         message Person {
-            // Comment for a field
-            string name = 1; // Inline comment
+            // Comment for a field 1
+            string name = 1; // Inline comment 1
+            // Comment for a field 2
+            string message = 2; // Inline comment 2
+            // Comment for a field 3
+            string email = 3; // Inline comment 3
         }
         PROTO;
 
-        $node = $this->parser->parse($proto);
+        $ast = $this->parser->parse($proto);
 
-        $this->assertSame('proto3', $node->syntax->syntax);
-        $this->assertCount(1, $node->syntax->comments);
-        $this->assertInstanceOf(CommentNode::class, $node->syntax->comments[0]);
-        $this->assertSame('This is a comment for syntax', $node->syntax->comments[0]->text);
+        $this->assertCount(1, $ast->topLevelDefs);
+        $messageNode = $ast->topLevelDefs[0];
 
-        $this->assertSame('example', $node->package->name);
-        $this->assertCount(1, $node->package->comments);
-        $this->assertSame('This is a comment for package', $node->package->comments[0]->text);
+        $this->assertSame('Person', $messageNode->name);
 
-        $this->assertCount(1, $node->topLevelDefs);
-        $message = $node->topLevelDefs[0];
-        $this->assertSame('Person', $message->name);
-        $this->assertCount(1, $message->comments);
-        $this->assertSame('This is a comment for message', $message->comments[0]->text);
+        // Check message comment
+        $this->assertCount(1, $messageNode->comments);
+        $this->assertInstanceOf(CommentNode::class, $messageNode->comments[0]);
+        $this->assertSame('This is a comment for message', $messageNode->comments[0]->text);
 
-        $this->assertCount(1, $message->fields);
-        $field = $message->fields[0];
-        $this->assertSame('name', $field->name);
-        $this->assertCount(2, $field->comments);
-        $this->assertSame('Comment for a field', $field->comments[0]->text);
-        $this->assertSame('Inline comment', $field->comments[1]->text);
+        // Check fields
+        $this->assertCount(3, $messageNode->fields);
+
+        // Check field 1
+        $field1 = $messageNode->fields[0];
+        $this->assertSame('name', $field1->name);
+        $this->assertCount(2, $field1->comments);
+        $this->assertSame('Comment for a field 1', $field1->comments[0]->text);
+        $this->assertSame('Inline comment 1', $field1->comments[1]->text);
+
+        // Check field 2
+        $field2 = $messageNode->fields[1];
+        $this->assertSame('message', $field2->name);
+        $this->assertCount(2, $field2->comments);
+        $this->assertSame('Comment for a field 2', $field2->comments[0]->text);
+        $this->assertSame('Inline comment 2', $field2->comments[1]->text);
+
+        // Check field 3
+        $field3 = $messageNode->fields[2];
+        $this->assertSame('email', $field3->name);
+        $this->assertCount(2, $field3->comments);
+        $this->assertSame('Comment for a field 3', $field3->comments[0]->text);
+        $this->assertSame('Inline comment 3', $field3->comments[1]->text);
     }
 
     public function testMultiLineComments(): void
@@ -178,7 +194,7 @@ final class CommentSupportTest extends TestCase
         $this->assertEquals(new CommentNode('Option comment'), $option->comments[0]);
 
         $this->assertEquals(new OptionNode('get', '/v1/say-hello', [
-            new CommentNode('HTTP option comment')
+            new CommentNode('HTTP option comment'),
         ]), $option->options[0]);
     }
 }

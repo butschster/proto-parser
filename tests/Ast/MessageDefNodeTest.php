@@ -21,6 +21,7 @@ message Person {
   string name = 1;
   int32 id = 2;
   string email = 3;
+  string message = 4;
 }
 PROTO,
         );
@@ -31,7 +32,7 @@ PROTO,
         $message = $node->topLevelDefs[0];
 
         $this->assertSame('Person', $message->name);
-        $this->assertCount(3, $message->fields);
+        $this->assertCount(4, $message->fields);
 
         $this->assertSame('name', $message->fields[0]->name);
         $this->assertEquals(new FieldType('string'), $message->fields[0]->type);

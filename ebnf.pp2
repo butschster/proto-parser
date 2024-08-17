@@ -37,7 +37,8 @@
 %token T_FLOAT_LITERAL    -?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?
 %token T_INT_LITERAL      -?[0-9]+
 %token T_STRING_LITERAL   "([^"\\]*(?:\\.[^"\\]*)*)"
-%token T_BOOL_LITERAL     true|false
+%token T_BOOL_LITERAL     \b(?i)(?:true|false)\b
+%token T_NULL_LITERAL     \b(?i)(?:null)\b
 %token T_COMMENT          //.*?$|/\*(.|\n)*?\*/
 
 // Add T_COLON token
@@ -272,7 +273,7 @@ TopLevelDef
     }
 
     $type = $children[0];
-    $name = $children[1]->getValue();
+    $name = $children[1];
     $number = (int)$children[2]->getValue();
     $options = isset($children[3]) ? $children[3] : [];
 
@@ -285,7 +286,7 @@ TopLevelDef
         comments: array_values($comments),
     );
 }
-    : Comment()* FieldModifier()? Type() <T_IDENTIFIER> ::T_EQUALS:: <T_INT_LITERAL> FieldOptions()? ::T_SEMICOLON::
+    : Comment()* FieldModifier()? Type() AnyString() ::T_EQUALS:: <T_INT_LITERAL> FieldOptions()? ::T_SEMICOLON:: Comment()?
     ;
 
 FieldModifier  -> {
@@ -613,4 +614,28 @@ RangeTo -> {
 
 FullIdent
     : <T_IDENTIFIER> (<T_DOT> <T_IDENTIFIER>)*
+    ;
+
+AnyString -> {
+    return $token->getValue();
+}
+    : <T_IDENTIFIER>
+    | ::T_MESSAGE::
+    | ::T_ENUM::
+    | ::T_ONEOF::
+    | ::T_MAP::
+    | ::T_RESERVED::
+    | ::T_SYNTAX::
+    | ::T_PACKAGE::
+    | ::T_IMPORT::
+    | ::T_SERVICE::
+    | ::T_RPC::
+    | ::T_RETURNS::
+    | ::T_STREAM::
+    | ::T_REPEATED::
+    | ::T_OPTIONAL::
+    | ::T_OPTION::
+    | ::T_REQUIRED::
+    | ::T_WEAK::
+    | ::T_PUBLIC::
     ;

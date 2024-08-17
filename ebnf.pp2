@@ -39,7 +39,8 @@
 %token T_STRING_LITERAL   "([^"\\]*(?:\\.[^"\\]*)*)"
 %token T_BOOL_LITERAL     \b(?i)(?:true|false)\b
 %token T_NULL_LITERAL     \b(?i)(?:null)\b
-%token T_COMMENT          //.*?$|/\*(.|\n)*?\*/
+%token T_INLINE_COMMENT    //.*?$
+%token T_BLOCK_COMMENT     /\*(.|\n)*?\*/
 
 // Add T_COLON token
 %token T_COLON           :
@@ -489,7 +490,7 @@ FieldNames -> {
     $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
     $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
 
-    $name = $children[0]->getValue();
+    $name = $children[0];
     $fields = [];
 
     foreach (array_slice($children, 1) as $child) {
@@ -506,8 +507,8 @@ FieldNames -> {
         comments: array_values($comments),
     );
 }
-    : Comment()* ::T_ENUM:: <T_IDENTIFIER> ::T_LBRACE::
-        (OptionDecl() | EnumField() | Reserved())*
+    : Comment()* ::T_ENUM:: AnyString() ::T_LBRACE::
+        (OptionDecl() | EnumField() | Reserved() | InlineComment())*
     ::T_RBRACE::
     ;
 
@@ -526,7 +527,7 @@ FieldNames -> {
         comments: array_values($comments),
     );
 }
-    : Comment()* <T_IDENTIFIER> ::T_EQUALS:: <T_INT_LITERAL> FieldOptions()? ::T_SEMICOLON::
+    : <T_IDENTIFIER> ::T_EQUALS:: <T_INT_LITERAL> FieldOptions()? ::T_SEMICOLON:: InlineComment()?
     ;
 
 #ServiceDef -> {
@@ -607,7 +608,16 @@ FieldNames -> {
     $comment = trim(preg_replace('/^\/\*+|\*+\/$|^\s*\/\/+/', '', $comment));
     return new \Butschster\ProtoParser\Ast\CommentNode($comment);
 }
-    : <T_COMMENT>
+    : <T_INLINE_COMMENT> | <T_BLOCK_COMMENT>
+    ;
+
+#InlineComment -> {
+    $comment = $children->getValue();
+    // remove /
+    $comment = trim(preg_replace('/^\/\*+|\*+\/$|^\s*\/\/+/', '', $comment));
+    return new \Butschster\ProtoParser\Ast\CommentNode($comment);
+}
+    : <T_INLINE_COMMENT>
     ;
 
 RangeTo -> {

@@ -23,9 +23,12 @@ final class EnumDefNodeTest extends TestCase
             package example;
 
             enum Color {
-              RED = 0;
-              GREEN = 1;
-              BLUE = 2;
+              // This is a comment
+              RED = 0; // This is a comment 0
+              GREEN = 1; // This is a comment 1
+              BLUE = 2; // This is a comment 2
+
+              // This is a comment 3
             }
             PROTO,
         );
@@ -40,9 +43,16 @@ final class EnumDefNodeTest extends TestCase
         $this->assertSame('Color', $enum->name);
         $this->assertCount(3, $enum->fields);
 
+        $this->assertCount(2, $enum->comments);
+        $this->assertSame('This is a comment', $enum->comments[0]->text);
+        $this->assertSame('This is a comment 3', $enum->comments[1]->text);
+
         $this->assertEnumField($enum->fields[0], 'RED', 0);
+        $this->assertSame('This is a comment 0', $enum->fields[0]->comments[0]->text);
         $this->assertEnumField($enum->fields[1], 'GREEN', 1);
+        $this->assertSame('This is a comment 1', $enum->fields[1]->comments[0]->text);
         $this->assertEnumField($enum->fields[2], 'BLUE', 2);
+        $this->assertSame('This is a comment 2', $enum->fields[2]->comments[0]->text);
     }
 
     public function testEnumWithOptions(): void

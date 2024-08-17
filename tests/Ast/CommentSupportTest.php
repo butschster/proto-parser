@@ -119,12 +119,9 @@ final class CommentSupportTest extends TestCase
 
         // Enum comment
         enum Color {
-            // Comment for RED
-            RED = 0;
-            // Comment for GREEN
-            GREEN = 1;
-            // Comment for BLUE
-            BLUE = 2;
+            RED = 0; // Comment for RED
+            GREEN = 1; // Comment for GREEN
+            BLUE = 2; // Comment for BLUE
         }
         PROTO;
 

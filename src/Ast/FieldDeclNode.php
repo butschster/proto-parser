@@ -15,7 +15,7 @@ final readonly class FieldDeclNode implements NodeInterface
         /** @var positive-int */
         public int $number,
         public ?FieldModifier $modifier = null,
-        /** @var OptionDeclNode[] */
+        /** @var OptionNode[] */
         public array $options = [],
         /** @var CommentNode[] */
         public array $comments = [],

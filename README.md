@@ -1,6 +1,7 @@
 # PHP Protocol Buffer Parser
 
-A powerful and flexible Protocol Buffers parser for PHP, built with precision and ease of use in mind.
+A powerful and flexible Protocol Buffers parser for PHP, capable of generating an Abstract Syntax Tree (AST) from
+`.proto` files. This package provides a robust foundation for working with Protocol Buffers in PHP projects.
 
 ## Key Features
 
@@ -52,22 +53,44 @@ echo $ast->package->name; // Outputs: example
 echo $ast->topLevelDefs[0]->name; // Outputs: Person
 ```
 
-## Parsed Elements
+## Understanding AST (Abstract Syntax Tree)
 
-The parser generates an Abstract Syntax Tree (AST) containing nodes for various Protocol Buffer elements:
+An Abstract Syntax Tree (AST) is a tree representation of the abstract syntactic structure of source code. In the
+context of this package, the AST represents the structure of a Protocol Buffer definition file.
 
-- `ProtoNode`: The root node of the AST
-- `SyntaxDeclNode`: Syntax declaration
-- `PackageDeclNode`: Package declaration
-- `ImportDeclNode`: Import statements
-- `MessageDefNode`: Message definitions
-- `EnumDefNode`: Enum definitions
-- `ServiceDefNode`: Service definitions
-- `FieldDeclNode`: Field declarations
-- `OneofDeclNode`: Oneof field declarations
-- `MapFieldDeclNode`: Map field declarations
-- `OptionDeclNode`: Option declarations
-- `RpcDeclNode`: RPC method declarations
+Here's an example of what an AST looks like for a simple `.proto` file:
+
+```protobuf
+syntax = "proto3";
+
+package example;
+
+message Person {
+    string name = 1;
+    int32 id = 2;
+    string email = 3;
+}
+```
+
+The corresponding AST would look something like this:
+
+```
+ProtoNode
+├── SyntaxDeclNode (syntax: "proto3")
+├── PackageDeclNode (name: "example")
+└── MessageDefNode (name: "Person")
+    ├── FieldDeclNode (name: "name", type: "string", number: 1)
+    ├── FieldDeclNode (name: "id", type: "int32", number: 2)
+    └── FieldDeclNode (name: "email", type: "string", number: 3)
+```
+
+Each node in the AST corresponds to a specific element in the Protocol Buffer definition. This structure allows for easy
+traversal and manipulation of the Protocol Buffer structure programmatically.
+
+## AST Class Diagram
+
+The following class diagram provides an overview of the AST node classes available in the Protobuf parser. This diagram
+shows the relationships between different node classes and their properties.
 
 ```mermaid
 classDiagram
@@ -310,6 +333,95 @@ foreach ($ast->options as $option) {
     echo "Option: {$option->name} = {$option->options[0]->value}\n";
 }
 ```
+
+## Example: Generating DTO Classes
+
+One powerful use case for the AST is generating Data Transfer Object (DTO) classes from Protocol Buffer definitions. You
+can use a code generator (like `nette/php-generator`) to create PHP classes based on the AST.
+
+Here's an example of how you might use the AST to generate a PHP class:
+
+```php
+use Butschster\ProtoParser\ProtoParser;
+use Butschster\ProtoParser\ProtoParserFactory;
+use Nette\PhpGenerator\ClassType;
+use Nette\PhpGenerator\PhpFile;
+
+$parser = ProtoParserFactory::create();
+$ast = $parser->parse(<<<'PROTO'
+syntax = "proto3";
+
+message Person {
+  string name = 1;
+  int32 age = 2;
+  repeated string hobbies = 3;
+}
+PROTO,
+);
+
+// Generate PHP class
+$file = new PhpFile();
+$file->setStrictTypes();
+
+$namespace = $file->addNamespace('App\Dto');
+
+$class = $namespace->addClass('Person');
+$class->setFinal()
+    ->setReadOnly();
+
+foreach ($ast->topLevelDefs[0]->fields as $field) {
+    $type = match ($field->type->type) {
+        'string' => 'string',
+        'int32' => 'int',
+        default => 'mixed',
+    };
+    
+    $property = $class->addProperty($field->name)
+        ->setType($type)
+        ->setPublic();
+    
+    if ($field->modifier === \Butschster\ProtoParser\Ast\FieldModifier::Repeated) {
+        $property->setType('array');
+    }
+}
+
+echo $file;
+```
+
+This would generate a PHP class like this:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Dto;
+
+final readonly class Person
+{
+    public string $name;
+    public int $age;
+    public array $hobbies;
+}
+```
+
+There are many possibilities for code generation using the AST. More use cases:
+
+1. **Generate DTOs with Validation Attributes**: You can use the AST to generate DTOs with
+   built-in validation using Symfony Validator attributes.
+
+2. **Generate OpenAPI Schema**: By parsing the service RPC options, you can automatically generate OpenAPI (Swagger)
+   schema documentation for your API endpoints, keeping your API documentation in sync with
+   your protobuf definitions.
+
+3. **Generate Clean JSON-Serializable DTOs**: Create DTOs that are optimized for JSON serialization, ensuring efficient
+   data transfer between your PHP application and other systems or frontends.
+
+4. **Static Analysis Tool Integration**: Use the AST to create custom PHPStan or Psalm rules that can analyze your
+   protobuf usage within your PHP codebase, enhancing type safety and catching potential issues early.
+
+5. **Code Migration Assistance**: Leverage the AST to help automate code migrations when your protobuf definitions
+   change, ensuring that your PHP code stays in sync with evolving protobuf schemas.
 
 ## AST Node Classes
 
@@ -640,7 +752,17 @@ final readonly class OptionNode
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please follow these guidelines when contributing to the project:
+
+1. Fork the repository and create your branch from `master`.
+2. Ensure that your code follows the PSR-12 coding standard.
+3. If you're modifying the parser grammar:
+    - Edit the `ebnf.pp2` file to make your changes.
+    - Run the unit tests to regenerate the `src/grammar.php` file.
+    - Ensure that all existing tests pass and add new tests to cover your changes.
+4. Update the documentation in the README if you're adding or changing functionality.
+5. Write clear and concise commit messages.
+6. Submit a pull request with a detailed description of your changes.
 
 ## License
 

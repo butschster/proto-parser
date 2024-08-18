@@ -69,6 +69,147 @@ The parser generates an Abstract Syntax Tree (AST) containing nodes for various 
 - `OptionDeclNode`: Option declarations
 - `RpcDeclNode`: RPC method declarations
 
+```mermaid
+classDiagram
+    ProtoNode *-- SyntaxDeclNode
+    ProtoNode *-- "0..*" ImportDeclNode
+    ProtoNode *-- "0..1" PackageDeclNode
+    ProtoNode *-- "0..*" OptionDeclNode
+    ProtoNode *-- "0..*" MessageDefNode
+    ProtoNode *-- "0..*" EnumDefNode
+    ProtoNode *-- "0..*" ServiceDefNode
+
+    MessageDefNode *-- "0..*" FieldDeclNode
+    MessageDefNode *-- "0..*" ReservedNode
+    MessageDefNode *-- "0..*" MessageDefNode
+    MessageDefNode *-- "0..*" EnumDefNode
+    MessageDefNode *-- "0..*" CommentNode
+
+    EnumDefNode *-- "0..*" EnumFieldNode
+    EnumDefNode *-- "0..*" CommentNode
+
+    ServiceDefNode *-- "0..*" RpcDeclNode
+    ServiceDefNode *-- "0..*" OptionDeclNode
+    ServiceDefNode *-- "0..*" CommentNode
+
+    FieldDeclNode *-- FieldType
+    FieldDeclNode *-- "0..1" FieldModifier
+    FieldDeclNode *-- "0..*" OptionDeclNode
+    FieldDeclNode *-- "0..*" CommentNode
+
+    EnumFieldNode *-- "0..*" OptionDeclNode
+    EnumFieldNode *-- "0..*" CommentNode
+
+    RpcDeclNode *-- RpcMessageType
+    RpcDeclNode *-- "0..*" OptionDeclNode
+    RpcDeclNode *-- "0..*" CommentNode
+
+    OptionDeclNode *-- "0..*" OptionNode
+    OptionDeclNode *-- "0..*" CommentNode
+
+    class ProtoNode {
+        +SyntaxDeclNode syntax
+        +ImportDeclNode[] imports
+        +PackageDeclNode? package
+        +OptionDeclNode[] options
+        +MessageDefNode[] messages
+        +EnumDefNode[] enums
+        +ServiceDefNode[] services
+    }
+
+    class MessageDefNode {
+        +string name
+        +FieldDeclNode[] fields
+        +ReservedNode[] reserved
+        +MessageDefNode[] nestedMessages
+        +EnumDefNode[] nestedEnums
+        +CommentNode[] comments
+    }
+
+    class EnumDefNode {
+        +string name
+        +EnumFieldNode[] fields
+        +CommentNode[] comments
+    }
+
+    class ServiceDefNode {
+        +string name
+        +RpcDeclNode[] methods
+        +OptionDeclNode[] options
+        +CommentNode[] comments
+    }
+
+    class FieldDeclNode {
+        +FieldType type
+        +string name
+        +int number
+        +FieldModifier? modifier
+        +OptionDeclNode[] options
+        +CommentNode[] comments
+    }
+
+    class EnumFieldNode {
+        +string name
+        +int number
+        +OptionDeclNode[] options
+        +CommentNode[] comments
+    }
+
+    class RpcDeclNode {
+        +string name
+        +RpcMessageType inputType
+        +RpcMessageType outputType
+        +OptionDeclNode[] options
+        +CommentNode[] comments
+    }
+
+    class SyntaxDeclNode {
+        +string syntax
+        +CommentNode[] comments
+    }
+
+    class ImportDeclNode {
+        +string path
+        +ImportModifier? modifier
+        +CommentNode[] comments
+    }
+
+    class PackageDeclNode {
+        +string name
+        +CommentNode[] comments
+    }
+
+    class OptionDeclNode {
+        +string? name
+        +OptionNode[] options
+        +CommentNode[] comments
+    }
+
+    class CommentNode {
+        +string text
+    }
+
+    class FieldType {
+        +string type
+    }
+
+    class RpcMessageType {
+        +string name
+        +bool isStream
+    }
+
+    class OptionNode {
+        +string name
+        +mixed value
+        +CommentNode[] comments
+    }
+
+    class ReservedNode {
+        +ReservedRange[]|ReservedNumber[] ranges
+        +CommentNode[] comments
+    }
+```
+
 ## Detailed Usage Examples
 
 ### Parsing Messages

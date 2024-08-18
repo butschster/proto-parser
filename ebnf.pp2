@@ -33,6 +33,7 @@
 %token T_SFIXED64         (?<=^|\s)sfixed64\b
 %token T_BOOL             (?<=^|\s)bool\b
 %token T_BYTES            (?<=^|\s)bytes\b
+%token T_ANY              (?<=^|\s)any\b
 
 %token T_FLOAT_LITERAL    -?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?
 %token T_INT_LITERAL      -?[0-9]+
@@ -308,6 +309,10 @@ Type -> {
         return new \Butschster\ProtoParser\Ast\FieldType($children->value);
     }
 
+    if ($children->getName() === 'T_ANY') {
+        return new \Butschster\ProtoParser\Ast\FieldType('any');
+    }
+
     $isDotFirst = $children[0] instanceof \Phplrt\Contracts\Lexer\TokenInterface && $children[0]->getValue() === '.';
     $parts = \array_filter(array_map(fn($child) => $child->getValue(), $children), fn($part) => $part !== '.');
 
@@ -318,7 +323,7 @@ Type -> {
 
     return new \Butschster\ProtoParser\Ast\FieldType($type);
 }
-    : BuiltInType() | TypeName()
+    : BuiltInType() | <T_ANY> | TypeName()
     ;
 
 TypeName

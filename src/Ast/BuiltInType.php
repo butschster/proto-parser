@@ -21,4 +21,5 @@ enum BuiltInType: string
     case Bool = 'bool';
     case String = 'string';
     case Bytes = 'bytes';
+    case Any = 'any';
 }

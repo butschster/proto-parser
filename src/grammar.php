@@ -403,11 +403,14 @@ return [
             };
         },
         57 => static function (\Phplrt\Parser\Context $ctx, $children) {
+            // The "$token" variable is an auto-generated
+            $token = $ctx->lastProcessedToken;
+
             if ($children instanceof \Butschster\ProtoParser\Ast\BuiltInType) {
                 return new \Butschster\ProtoParser\Ast\FieldType($children->value);
             }
 
-            if ($children->getName() === 'T_ANY') {
+            if ($token->getName() === 'T_ANY') {
                 return new \Butschster\ProtoParser\Ast\FieldType('any');
             }
 
@@ -514,6 +517,7 @@ return [
             $comments = array_filter($children, fn($child) => $child instanceof \Butschster\ProtoParser\Ast\CommentNode);
             $children = array_values(array_filter($children, fn($child) => !$child instanceof \Butschster\ProtoParser\Ast\CommentNode));
 
+            $modifier = null;
             if ($children[0] instanceof \Butschster\ProtoParser\Ast\FieldModifier) {
                 $modifier = $children[0];
                 $children = array_slice($children, 1);
